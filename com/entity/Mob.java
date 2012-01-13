@@ -16,7 +16,5 @@ import com.jme3.scene.shape.Box;
  */
 public abstract class Mob extends Entity{
 
-       public Mob(){
 
-    } 
 }

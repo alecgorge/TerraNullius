@@ -30,7 +30,7 @@ import com.jme3.system.AppSettings;
 import java.util.logging.*;
 
 
-public class Main extends SimpleApplication {
+public class Game extends SimpleApplication {
     
     Geometry player;
     CameraNode camNode;
@@ -48,7 +48,7 @@ public class Main extends SimpleApplication {
     float shootInterval = 0.1f;
     
     public static void main(String[] args) {
-        Main app = new Main();
+        Game app = new Game();
         app.setShowSettings(false);
         settings = new AppSettings(true);
         settings.put("Width", 1280);
