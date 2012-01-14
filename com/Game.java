@@ -1,5 +1,6 @@
 package com;
 
+import com.entity.Player;
 import com.jme3.app.SimpleApplication;
 import com.jme3.collision.CollisionResult;
 import com.jme3.collision.CollisionResults;
@@ -32,7 +33,8 @@ import java.util.logging.*;
 
 public class Game extends SimpleApplication {
     
-    Geometry player;
+    static Game instance;
+    
     CameraNode camNode;
     Node playerNode;
     static AppSettings settings;
@@ -47,8 +49,11 @@ public class Game extends SimpleApplication {
     float shootTimer;
     float shootInterval = 0.1f;
     
+    Player player;
+    
     public static void main(String[] args) {
         Game app = new Game();
+        Game.instance = app;
         app.setShowSettings(false);
         settings = new AppSettings(true);
         settings.put("Width", 1280);
@@ -69,22 +74,17 @@ public class Game extends SimpleApplication {
         rootNode.attachChild(createTiles(6,0));
         
         //Player
-        Box b = new Box(new Vector3f(0,0,0), 0.5f, 0.5f, 1f);
-        player = new Geometry("Player", b);
-        Material mat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
-        mat.setColor("Color", ColorRGBA.White);
-        player.setMaterial(mat);
-        player.setLocalTranslation(new Vector3f(40,40,1));
+        player = new Player(instance);
         
         playerNode = new Node("PlayerNode");
-        playerNode.attachChild(player);
+        playerNode.attachChild(player.getGeom());
         
         //Camera
         flyCam.setEnabled(false);
         camNode = new CameraNode("Camera Node", cam);
         camNode.setControlDir(ControlDirection.SpatialToCamera);
         camNode.setLocalTranslation(new Vector3f(25,25,16));
-        camNode.lookAt(player.getLocalTranslation(), Vector3f.UNIT_Z);
+        camNode.lookAt(player.getPos(), Vector3f.UNIT_Z);
         playerNode.attachChild(camNode);
                 
         rootNode.attachChild(playerNode);
@@ -166,7 +166,7 @@ public class Game extends SimpleApplication {
     }
       
     protected Geometry makeCube(String name, float x, float y, float z) {
-        Box box = new Box(player.getLocalTranslation().add(x, y, z), 1, 1, 1);
+        Box box = new Box(player.getPos().add(x, y, z), 1, 1, 1);
         Geometry cube = new Geometry(name, box);
         Material mat1 = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
         mat1.setColor("Color", ColorRGBA.randomColor());
@@ -195,7 +195,7 @@ public class Game extends SimpleApplication {
         Vector2f mousePos = new Vector2f(polarMag * FastMath.cos(polarAngle),
                                          polarMag * FastMath.sin(polarAngle));
 
-        Vector3f playerPos = player.getWorldTranslation();
+        Vector3f playerPos = player.getWorldPos();
 
         Vector3f rayCoords = new Vector3f(((mousePos.x * 300) + playerPos.x),
                                           ((mousePos.y * 300) + playerPos.y),
@@ -285,7 +285,7 @@ public class Game extends SimpleApplication {
                 cursorPos = inputManager.getCursorPosition();
                 float angle = (float)(Math.PI + Math.PI/4 + Math.atan2((cursorPos.y - settings.getHeight()/2),(cursorPos.x - settings.getWidth()/2)));
                 rotator.fromAngles(0, 0, angle);
-                player.setLocalRotation(rotator);
+                player.setRot(rotator);
             }
         }
     };
