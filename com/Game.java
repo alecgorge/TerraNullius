@@ -58,7 +58,7 @@ public class Game extends SimpleApplication {
         settings = new AppSettings(true);
         settings.put("Width", 1280);
         settings.put("Height", 720);
-        settings.put("Title", "Gore");
+        settings.put("Title", "Terra Nullius");
         settings.put("VSync", true);
         //Anti-Aliasing
         settings.put("Samples", 4);
