@@ -293,7 +293,7 @@ public class Game extends SimpleApplication {
      
     @Override
     public void simpleUpdate(float tpf) {
-
+        player.update();
         
     }
 
