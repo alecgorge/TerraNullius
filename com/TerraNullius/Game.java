@@ -1,7 +1,9 @@
 package com.TerraNullius;
 
 import com.TerraNullius.entity.Entity;
+import com.TerraNullius.entity.Mob;
 import com.TerraNullius.entity.Player;
+import com.TerraNullius.entity.Zombie;
 import com.jme3.app.SimpleApplication;
 import com.jme3.collision.CollisionResult;
 import com.jme3.collision.CollisionResults;
@@ -29,6 +31,8 @@ import com.jme3.scene.control.CameraControl.ControlDirection;
 import com.jme3.scene.shape.Box;
 import com.jme3.scene.shape.Sphere;
 import com.jme3.system.AppSettings;
+import java.util.ArrayList;
+import java.util.Random;
 import java.util.logging.*;
 
 
@@ -38,20 +42,21 @@ public class Game extends SimpleApplication {
     
     CameraNode camNode;
     Node playerNode;
+    Node mobs;
+    
     static AppSettings settings;
     
-    Node shootables;
+    //Node shootables;
     Geometry mark;
     Geometry line; //debug
     
-    Quaternion rotator = new Quaternion();
     Vector2f cursorPos;
     
     float shootTimer;
     float shootInterval = 0.1f;
     
-    Player player;
-    
+    public Player player;
+    public ArrayList<Mob> mobList = new ArrayList();
     
     public static void main(String[] args) {
         Game app = new Game();
@@ -92,12 +97,16 @@ public class Game extends SimpleApplication {
         rootNode.attachChild(playerNode);
         
         //Targets - DEBUG
-        shootables = new Node("Shootables");
-        rootNode.attachChild(shootables);
-        shootables.attachChild(makeCube("a Dragon", -5f, 0f, 0f));
-        shootables.attachChild(makeCube("a tin can", 1f, -5f, 0f));
-        shootables.attachChild(makeCube("the Sheriff", 0f, 7f, 0f));
-        shootables.attachChild(makeCube("the Deputy", 6f, 0f, 0f));
+//        shootables = new Node("Shootables");
+//        rootNode.attachChild(shootables);
+//        shootables.attachChild(makeCube("a Dragon", -5f, 0f, 0f));
+//        shootables.attachChild(makeCube("a tin can", 1f, -5f, 0f));
+//        shootables.attachChild(makeCube("the Sheriff", 0f, 7f, 0f));
+//        shootables.attachChild(makeCube("the Deputy", 6f, 0f, 0f));
+        
+        mobs = new Node("Mobs");
+        rootNode.attachChild(mobs);
+        createZombies(10, 20);
         
         //Hit detection testing - DEBUG
         Sphere sphere = new Sphere(30, 30, 0.2f);
@@ -166,6 +175,28 @@ public class Game extends SimpleApplication {
             return ColorRGBA.Yellow; 
         }
     }
+    
+    //Creates new zombies of number amount a random distance less than maxDist away from the player
+    private void createZombies(int amount, int maxDist){
+        maxDist *= 2;   //convert radius to diameter
+        Zombie zombie;
+        Random rand = new Random();
+        Vector3f offset;
+        Material mat;
+        for(int i=0; i<amount; i++){
+            zombie = new Zombie(instance);
+            
+            offset = new Vector3f(rand.nextInt(maxDist) - maxDist/2, rand.nextInt(maxDist) - maxDist/2, 0);
+            zombie.setPos(player.getPos().add(offset));
+            
+            mat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");        
+            mat.setColor("Color", ColorRGBA.randomColor());
+            zombie.setMat(mat);
+            
+            mobList.add(zombie);
+            mobs.attachChild(zombie.getGeom());
+        }
+    }
       
     protected Geometry makeCube(String name, float x, float y, float z) {
         Box box = new Box(player.getPos().add(x, y, z), 1, 1, 1);
@@ -222,7 +253,7 @@ public class Game extends SimpleApplication {
         lineMesh.updateCounts();
         line.setMesh(lineMesh);
 
-        shootables.collideWith(ray, results);
+        mobs.collideWith(ray, results);
 
         System.out.println("----- Collisions? " + results.size() + "-----");
         for (int i = 0; i < results.size(); i++) {
@@ -286,8 +317,7 @@ public class Game extends SimpleApplication {
             if (name.equals("Mouse Up") || name.equals("Mouse Down") || name.equals("Mouse Right") || name.equals("Mouse Left")) {
                 cursorPos = inputManager.getCursorPosition();
                 float angle = (float)(Math.PI + Math.PI/4 + Math.atan2((cursorPos.y - settings.getHeight()/2),(cursorPos.x - settings.getWidth()/2)));
-                rotator.fromAngles(0, 0, angle);
-                player.setRot(rotator);
+                player.setRot((new Quaternion()).fromAngles(0, 0, angle));
             }
         }
     };
@@ -296,6 +326,9 @@ public class Game extends SimpleApplication {
     @Override
     public void simpleUpdate(float tpf) {
         player.update();
+        for(Mob m : mobList){
+            m.update(tpf);    
+        }
         
     }
 

@@ -30,5 +30,17 @@ public class Zombie extends Mob {
         geom.setMaterial(mat);
         
         update();
-    } 
+    }
+    
+    @Override
+    public void update(float tpf){
+        Vector3f target = game.player.getPos();
+        
+        //move from zombie pos to player pos by 1 speed per frame
+        //use geom.move(Vector3f offset) ?
+        
+        
+        geom.setLocalTranslation(pos);
+        geom.setLocalRotation(rot);
+    }
 }

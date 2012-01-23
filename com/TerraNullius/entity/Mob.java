@@ -14,7 +14,11 @@ import com.jme3.scene.shape.Box;
  *
  * @author Griffin
  */
-public abstract class Mob extends Entity{
+public class Mob extends Entity{
+    
+    int speed = 1;
+    
+    public void update(float tpf){}
 
 
 }
