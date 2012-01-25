@@ -23,6 +23,8 @@ public class Player extends Mob {
         pos = new Vector3f(40,40,1);
         rot = new Quaternion();
         
+        speed = 5f;
+        
         Box b = new Box(new Vector3f(0,0,0), 0.5f, 0.5f, 1f);
         geom = new Geometry("Player", b);
         mat = new Material(game.getAssetManager(), "Common/MatDefs/Misc/Unshaded.j3md");

@@ -42,7 +42,7 @@ public class Game extends SimpleApplication {
     
     CameraNode camNode;
     Node playerNode;
-    Node mobs;
+    public Node mobs;
     
     static AppSettings settings;
     
@@ -106,7 +106,7 @@ public class Game extends SimpleApplication {
         
         mobs = new Node("Mobs");
         rootNode.attachChild(mobs);
-        createZombies(10, 20);
+        createZombies(50, 30);
         
         //Hit detection testing - DEBUG
         Sphere sphere = new Sphere(30, 30, 0.2f);
@@ -262,6 +262,14 @@ public class Game extends SimpleApplication {
             String hit = results.getCollision(i).getGeometry().getName();
             System.out.println("* Collision #" + i);
             System.out.println("  You shot " + hit + " at " + pt + ", " + dist + " wu away.");
+            
+            Geometry temp = results.getCollision(i).getGeometry();
+            for(Mob m : mobList){
+                if(m.getGeom() == temp ){
+                    m.shot();
+                    break;
+                }
+            }
         }
 
         if (results.size() > 0) {
@@ -303,16 +311,16 @@ public class Game extends SimpleApplication {
         public void onAnalog(String name, float value, float tpf) {
             if (name.equals("Right")) {
               //playerNode.setWorldTranslation(v.x - value*5f, v.y + value*5f, v.z);
-                playerNode.move(tpf*5f,-tpf*5f, 0);
+                playerNode.move(tpf*player.getSpeed(),-tpf*player.getSpeed(), 0);
             }
             if (name.equals("Left")) {
-                playerNode.move(-tpf*5f, tpf*5f, 0);
+                playerNode.move(-tpf*player.getSpeed(), tpf*player.getSpeed(), 0);
             }
             if (name.equals("Up")) {
-                playerNode.move(tpf*5f,tpf*5f, 0);
+                playerNode.move(tpf*player.getSpeed(),tpf*player.getSpeed(), 0);
             }
             if (name.equals("Down")) {
-                playerNode.move(-tpf*5f,-tpf*5f, 0);
+                playerNode.move(-tpf*player.getSpeed(),-tpf*player.getSpeed(), 0);
             }            
             if (name.equals("Mouse Up") || name.equals("Mouse Down") || name.equals("Mouse Right") || name.equals("Mouse Left")) {
                 cursorPos = inputManager.getCursorPosition();
