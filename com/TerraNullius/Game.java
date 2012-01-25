@@ -255,26 +255,17 @@ public class Game extends SimpleApplication {
 
         mobs.collideWith(ray, results);
 
-        System.out.println("----- Collisions? " + results.size() + "-----");
-        for (int i = 0; i < results.size(); i++) {
-            float dist = results.getCollision(i).getDistance();
-            Vector3f pt = results.getCollision(i).getContactPoint();
-            String hit = results.getCollision(i).getGeometry().getName();
-            System.out.println("* Collision #" + i);
-            System.out.println("  You shot " + hit + " at " + pt + ", " + dist + " wu away.");
-            
-            Geometry temp = results.getCollision(i).getGeometry();
+        if (results.size() > 0) {
+            CollisionResult col = results.getCollision(0);
+            Geometry tempGeom = col.getGeometry();
+            System.out.println("  You shot " + tempGeom.getName() + " at " + col.getContactPoint() + ", " + col.getDistance() + " wu away.");
             for(Mob m : mobList){
-                if(m.getGeom() == temp ){
+                if(m.getGeom() == tempGeom ){
                     m.shot();
                     break;
                 }
             }
-        }
-
-        if (results.size() > 0) {
-            CollisionResult closest = results.getClosestCollision();
-            mark.setLocalTranslation(closest.getContactPoint());
+            mark.setLocalTranslation(col.getContactPoint());
             rootNode.attachChild(mark);
         } else {
             rootNode.detachChild(mark);
