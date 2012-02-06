@@ -25,7 +25,7 @@ public class NPC extends Mob {
         
         Box b = new Box(new Vector3f(0,0,0), 0.5f, 0.5f, 1f);
         geom = new Geometry("NPC", b);
-        mat = new Material(game.getAssetManager(), "Common/MatDefs/Misc/Unshaded.j3md");
+        Material mat = new Material(game.getAssetManager(), "Common/MatDefs/Misc/Unshaded.j3md");
         mat.setColor("Color", ColorRGBA.Green);
         geom.setMaterial(mat);
         

@@ -20,6 +20,8 @@ public class Zombie extends Mob {
     public Zombie(Game game){
         this.game = game;
         
+        health = 5;
+        
         pos = new Vector3f(40,40,1);
         rot = new Quaternion();
         
@@ -28,11 +30,11 @@ public class Zombie extends Mob {
         
         Box b = new Box(new Vector3f(0,0,0), 0.5f, 1f, 0.5f);
         geom = new Geometry("Zombie", b);
-        mat = new Material(game.getAssetManager(), "Common/MatDefs/Misc/Unshaded.j3md");
+        Material mat = new Material(game.getAssetManager(), "Common/MatDefs/Misc/Unshaded.j3md");
         mat.setColor("Color", ColorRGBA.Black);
         geom.setMaterial(mat);
         
-        geom.lookAt(new Vector3f(0,0,1f), Vector3f.UNIT_Z);
+        geom.lookAt(game.player.getWorldPos(), Vector3f.UNIT_Z);
         
         update();
     }
@@ -41,15 +43,16 @@ public class Zombie extends Mob {
     public void update(float tpf){
         Vector3f target = game.player.getWorldPos();
         
-        //move from zombie pos to player pos by 1 speed per frame
-        //use geom.move(Vector3f offset) ?
         pos = pos.add((target.subtract(pos)).normalize().mult(speed*tpf));
+        checkCollisions(pos);
         
         Quaternion old = new Quaternion(geom.getLocalRotation());
         geom.lookAt(target, Vector3f.UNIT_Z);
-        geom.getLocalRotation().slerp(old, turnSpeed); // the higher the value, the slower missilesrotation
+        geom.getLocalRotation().slerp(old, turnSpeed); // the higher the value, the slower rotation
 
         geom.setLocalTranslation(pos);
         rot = geom.getLocalRotation();
+        
+        //mat.setColor("Color", ColorRGBA.Black);
     }
 }

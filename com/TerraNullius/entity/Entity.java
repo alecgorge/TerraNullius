@@ -12,6 +12,7 @@ import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.shape.Box;
+import java.util.ArrayList;
 
 /**
  *
@@ -23,9 +24,12 @@ public class Entity {
     Game game;
 
     Geometry geom;
-    Material mat;
     Vector3f pos;
     Quaternion rot;
+    
+    int damage = 0;
+    int health = 10;
+    int strength = 1;
     
     public void update() {
         geom.setLocalTranslation(pos);
@@ -36,9 +40,11 @@ public class Entity {
     
     public Geometry getGeom(){return this.geom;}
     
-    public void setMat(Material mat){this.mat = mat;}
+//    public void setTargetPos(Vector3f pos) {this.targetPos = pos;}
     
-    public Material getMat(){return this.mat;}
+    public void move(Vector3f pos) {this.pos.add(pos);}
+    
+    public void move(float x, float y, float z) {this.pos.add(new Vector3f(x, y, z));}
 
     public void setPos(Vector3f pos) {this.pos = pos;}
 
@@ -65,6 +71,16 @@ public class Entity {
     }
     
     public Quaternion getRot() {return this.rot;}
+    
+    public ArrayList<Entity> checkCollisions(Vector3f targetPos){
+        ArrayList<Entity> collidingWith = new ArrayList();
+        for(Mob m : game.mobList){
+            if((targetPos.x < m.pos.x + 0.2f && targetPos.x > m.pos.x - 0.2f) && (targetPos.y < m.pos.y + 0.2f && targetPos.y > m.pos.y - 0.2f)){
+                collidingWith.add(m);
+            }    
+        }
+        return collidingWith;
+    }
 
     
 }

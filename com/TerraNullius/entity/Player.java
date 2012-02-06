@@ -9,6 +9,7 @@ import com.jme3.material.Material;
 import com.jme3.math.ColorRGBA;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
+import com.jme3.scene.CameraNode;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.shape.Box;
 
@@ -16,7 +17,7 @@ import com.jme3.scene.shape.Box;
  *
  * @author Griffin
  */
-public class Player extends Mob {
+public class Player extends Mob {    
     public Player(Game game){
         this.game = game;
         
@@ -24,13 +25,27 @@ public class Player extends Mob {
         rot = new Quaternion();
         
         speed = 5f;
+        health = 10;
+        strength = 3;
         
         Box b = new Box(new Vector3f(0,0,0), 0.5f, 0.5f, 1f);
         geom = new Geometry("Player", b);
-        mat = new Material(game.getAssetManager(), "Common/MatDefs/Misc/Unshaded.j3md");
+        Material mat = new Material(game.getAssetManager(), "Common/MatDefs/Misc/Unshaded.j3md");
         mat.setColor("Color", ColorRGBA.White);
         geom.setMaterial(mat);
+        geom.setLocalTranslation(pos);
         
         update();
-    } 
+    }
+    
+    @Override
+    public void update() {
+        checkCollisions(pos);
+        
+        //geom.setLocalTranslation(pos);
+        pos = geom.getLocalTranslation();
+        geom.setLocalRotation(rot);
+        
+        //mat.setColor("Color", ColorRGBA.White);
+    }
 }

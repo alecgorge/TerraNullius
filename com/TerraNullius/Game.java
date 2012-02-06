@@ -78,11 +78,10 @@ public class Game extends SimpleApplication {
     public void simpleInitApp() {
         Logger.getLogger("").setLevel(Level.SEVERE);
         
-        rootNode.attachChild(createTiles(6,0));
+        rootNode.attachChild(createTiles(6,0));   
         
-        //Player
         player = new Player(instance);
-        
+                
         playerNode = new Node("PlayerNode");
         playerNode.attachChild(player.getGeom());
         
@@ -95,14 +94,6 @@ public class Game extends SimpleApplication {
         playerNode.attachChild(camNode);
                 
         rootNode.attachChild(playerNode);
-        
-        //Targets - DEBUG
-//        shootables = new Node("Shootables");
-//        rootNode.attachChild(shootables);
-//        shootables.attachChild(makeCube("a Dragon", -5f, 0f, 0f));
-//        shootables.attachChild(makeCube("a tin can", 1f, -5f, 0f));
-//        shootables.attachChild(makeCube("the Sheriff", 0f, 7f, 0f));
-//        shootables.attachChild(makeCube("the Deputy", 6f, 0f, 0f));
         
         mobs = new Node("Mobs");
         rootNode.attachChild(mobs);
@@ -182,16 +173,16 @@ public class Game extends SimpleApplication {
         Zombie zombie;
         Random rand = new Random();
         Vector3f offset;
-        Material mat;
+//        Material mat;
         for(int i=0; i<amount; i++){
             zombie = new Zombie(instance);
             
             offset = new Vector3f(rand.nextInt(maxDist) - maxDist/2, rand.nextInt(maxDist) - maxDist/2, 0);
             zombie.setPos(player.getPos().add(offset));
             
-            mat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");        
-            mat.setColor("Color", ColorRGBA.randomColor());
-            zombie.setMat(mat);
+//            mat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");        
+//            mat.setColor("Color", ColorRGBA.randomColor());
+//            zombie.getGeom().setMaterial(mat);
             
             mobList.add(zombie);
             mobs.attachChild(zombie.getGeom());
@@ -261,7 +252,7 @@ public class Game extends SimpleApplication {
             System.out.println("  You shot " + tempGeom.getName() + " at " + col.getContactPoint() + ", " + col.getDistance() + " wu away.");
             for(Mob m : mobList){
                 if(m.getGeom() == tempGeom ){
-                    m.shot();
+                    m.hurt(player);
                     break;
                 }
             }
@@ -301,23 +292,27 @@ public class Game extends SimpleApplication {
     private AnalogListener analogListener = new AnalogListener() {
         public void onAnalog(String name, float value, float tpf) {
             if (name.equals("Right")) {
-              //playerNode.setWorldTranslation(v.x - value*5f, v.y + value*5f, v.z);
                 playerNode.move(tpf*player.getSpeed(),-tpf*player.getSpeed(), 0);
+                player.move(tpf*player.getSpeed(),-tpf*player.getSpeed(), 0);
             }
             if (name.equals("Left")) {
                 playerNode.move(-tpf*player.getSpeed(), tpf*player.getSpeed(), 0);
+                player.move(-tpf*player.getSpeed(), tpf*player.getSpeed(), 0);                
             }
             if (name.equals("Up")) {
                 playerNode.move(tpf*player.getSpeed(),tpf*player.getSpeed(), 0);
+                player.move(tpf*player.getSpeed(),tpf*player.getSpeed(), 0);
             }
             if (name.equals("Down")) {
                 playerNode.move(-tpf*player.getSpeed(),-tpf*player.getSpeed(), 0);
+                player.move(-tpf*player.getSpeed(),-tpf*player.getSpeed(), 0);
             }            
             if (name.equals("Mouse Up") || name.equals("Mouse Down") || name.equals("Mouse Right") || name.equals("Mouse Left")) {
                 cursorPos = inputManager.getCursorPosition();
                 float angle = (float)(Math.PI + Math.PI/4 + Math.atan2((cursorPos.y - settings.getHeight()/2),(cursorPos.x - settings.getWidth()/2)));
                 player.setRot((new Quaternion()).fromAngles(0, 0, angle));
             }
+            System.out.println(player.getPos());
         }
     };
     

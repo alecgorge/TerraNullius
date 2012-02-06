@@ -25,9 +25,12 @@ public class Mob extends Entity{
     
     public float getTurnSpeed(){return turnSpeed;}
     
-    public void shot(){
-        //TODO: Add health values so 1 shot != 1 kill
-        die();
+    public void hurt(Entity e){
+        damage += strength;
+        move(pos.subtract(e.pos).normalize().mult(0.1f));
+        geom.getMaterial().setColor("Color", ColorRGBA.Red);
+        
+        if(damage >= health) die();
     }
     
     public void die(){
