@@ -6,6 +6,7 @@ package com.TerraNullius.entity;
 
 import com.TerraNullius.Game;
 import com.jme3.app.Application;
+import com.jme3.collision.CollisionResults;
 import com.jme3.material.Material;
 import com.jme3.math.ColorRGBA;
 import com.jme3.math.Quaternion;
@@ -22,14 +23,20 @@ import java.util.ArrayList;
 public class Entity {
     
     Game game;
+    
+    
 
     Geometry geom;
     Vector3f pos;
     Quaternion rot;
     
+    ArrayList<Entity> collidingWith = new ArrayList();
+    
     int damage = 0;
-    int health = 10;
-    int strength = 1;
+    int health = 100;
+    int strength = 10;
+    long hurtTimer = 0;
+    int hurtInterval = 500;
     
     public void update() {
         geom.setLocalTranslation(pos);
@@ -72,14 +79,30 @@ public class Entity {
     
     public Quaternion getRot() {return this.rot;}
     
-    public ArrayList<Entity> checkCollisions(Vector3f targetPos){
-        ArrayList<Entity> collidingWith = new ArrayList();
+    public void checkCollisions(Vector3f targetPos){
         for(Mob m : game.mobList){
-            if((targetPos.x < m.pos.x + 0.2f && targetPos.x > m.pos.x - 0.2f) && (targetPos.y < m.pos.y + 0.2f && targetPos.y > m.pos.y - 0.2f)){
-                collidingWith.add(m);
-            }    
+//            if((targetPos.x < m.pos.x + 0.2f && targetPos.x > m.pos.x - 0.2f) && (targetPos.y < m.pos.y + 0.2f && targetPos.y > m.pos.y - 0.2f)){
+//                collidingWith.add(m);
+//            }   
+            CollisionResults result = new CollisionResults();
+            this.geom.collideWith(m.geom, result);
+            //TODO: Finish this collision
         }
-        return collidingWith;
+    }
+    public void hurt(Entity e){
+        damage += e.strength;
+        push(e);
+        geom.getMaterial().setColor("Color", ColorRGBA.Red);
+        
+        if(damage >= health) die();
+    }
+    
+    public void push(Entity e){
+        move(pos.subtract(e.pos).normalize().mult(0.1f));    
+    }
+
+    public void die(){
+        game.getRootNode().detachChild(geom);
     }
 
     

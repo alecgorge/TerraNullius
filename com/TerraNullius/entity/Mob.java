@@ -25,14 +25,7 @@ public class Mob extends Entity{
     
     public float getTurnSpeed(){return turnSpeed;}
     
-    public void hurt(Entity e){
-        damage += strength;
-        move(pos.subtract(e.pos).normalize().mult(0.1f));
-        geom.getMaterial().setColor("Color", ColorRGBA.Red);
-        
-        if(damage >= health) die();
-    }
-    
+    @Override
     public void die(){
         game.mobs.detachChild(geom);
         game.mobList.remove(this);

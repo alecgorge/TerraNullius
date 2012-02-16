@@ -5,6 +5,7 @@
 package com.TerraNullius.entity;
 
 import com.TerraNullius.Game;
+import com.TerraNullius.entity.Player;
 import com.jme3.material.Material;
 import com.jme3.math.ColorRGBA;
 import com.jme3.math.Quaternion;
@@ -20,7 +21,7 @@ public class Zombie extends Mob {
     public Zombie(Game game){
         this.game = game;
         
-        health = 5;
+        health = 50;
         
         pos = new Vector3f(40,40,1);
         rot = new Quaternion();
@@ -45,6 +46,17 @@ public class Zombie extends Mob {
         
         pos = pos.add((target.subtract(pos)).normalize().mult(speed*tpf));
         checkCollisions(pos);
+        for(Entity e : collidingWith){
+            if(e instanceof Player){
+                if(System.currentTimeMillis() - hurtTimer > hurtInterval){
+                    e.hurt(this);
+                    hurtTimer = System.currentTimeMillis();
+                }
+            }else{
+                e.push(this);
+            }
+        }
+        
         
         Quaternion old = new Quaternion(geom.getLocalRotation());
         geom.lookAt(target, Vector3f.UNIT_Z);

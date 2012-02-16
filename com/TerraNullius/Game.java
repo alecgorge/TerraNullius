@@ -212,8 +212,6 @@ public class Game extends SimpleApplication {
         //draw line to target
         //notify target if its hit
 
-        //BUG: Ray does not line up perfectly with line
-
         CollisionResults results = new CollisionResults();
 
         Vector2f mousePosNoOff = new Vector2f();

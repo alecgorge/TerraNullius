@@ -25,8 +25,8 @@ public class Player extends Mob {
         rot = new Quaternion();
         
         speed = 5f;
-        health = 10;
-        strength = 3;
+        health = 100;
+        strength = 33;
         
         Box b = new Box(new Vector3f(0,0,0), 0.5f, 0.5f, 1f);
         geom = new Geometry("Player", b);
@@ -45,7 +45,5 @@ public class Player extends Mob {
         //geom.setLocalTranslation(pos);
         pos = geom.getLocalTranslation();
         geom.setLocalRotation(rot);
-        
-        //mat.setColor("Color", ColorRGBA.White);
     }
 }
