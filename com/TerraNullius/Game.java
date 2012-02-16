@@ -33,6 +33,7 @@ import com.jme3.scene.shape.Sphere;
 import com.jme3.system.AppSettings;
 import java.util.ArrayList;
 import java.util.Random;
+import java.util.Timer;
 import java.util.logging.*;
 
 
@@ -52,8 +53,9 @@ public class Game extends SimpleApplication {
     
     Vector2f cursorPos;
     
-    float shootTimer;
-    float shootInterval = 0.1f;
+    long shootTimer;
+    int shootInterval = 50;
+    boolean fireNext;
     
     public Player player;
     public ArrayList<Mob> mobList = new ArrayList();
@@ -76,6 +78,10 @@ public class Game extends SimpleApplication {
 
     @Override
     public void simpleInitApp() {
+        /*
+         * TODO: Look into using RigidBodyControl for everything in physics so we dont have to use walkDirection()
+         * 
+         */
         Logger.getLogger("").setLevel(Level.SEVERE);
         
         rootNode.attachChild(createTiles(6,0));   
@@ -103,7 +109,7 @@ public class Game extends SimpleApplication {
         Sphere sphere = new Sphere(30, 30, 0.2f);
         mark = new Geometry("BOOM!", sphere);
         Material mark_mat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
-        mark_mat.setColor("Color", ColorRGBA.Red);
+        mark_mat.setColor("Color", ColorRGBA.White);
         mark.setMaterial(mark_mat);
                
         Mesh lineMesh = new Mesh();
@@ -118,6 +124,7 @@ public class Game extends SimpleApplication {
         matL.setColor("Color", ColorRGBA.Black);
         line.setMaterial(matL);
         rootNode.attachChild(line);
+        
     
         initKeys();
     }
@@ -198,7 +205,7 @@ public class Game extends SimpleApplication {
         return cube;
     }
     
-    private void shoot(){
+    public void shoot(){
         //get rotation
         //ray trace to target
         //detect hit
@@ -221,8 +228,8 @@ public class Game extends SimpleApplication {
 
         Vector3f playerPos = player.getWorldPos();
 
-        Vector3f rayCoords = new Vector3f(((mousePos.x * 300) + playerPos.x),
-                                          ((mousePos.y * 300) + playerPos.y),
+        Vector3f rayCoords = new Vector3f(((mousePos.x * 300)),
+                                          ((mousePos.y * 300)),
                                           1f);
 
         Ray ray = new Ray(playerPos, rayCoords);
@@ -235,8 +242,8 @@ public class Game extends SimpleApplication {
             playerPos.x,
             playerPos.y,
             playerPos.z,
-            rayCoords.x,
-            rayCoords.y,
+            rayCoords.x + playerPos.x,
+            rayCoords.y + playerPos.y,
             1f
         });
         lineMesh.setBuffer(VertexBuffer.Type.Index, 2, new short[]{ 0, 1 });
@@ -283,8 +290,10 @@ public class Game extends SimpleApplication {
     
     private ActionListener actionListener = new ActionListener() {
         public void onAction(String name, boolean isPressed, float tpf) {
-            if(name.equals("Left Click") && !isPressed){
-                    shoot();
+            if(name.equals("Left Click") && isPressed){
+                fireNext = true;
+            }else if(!isPressed){
+                fireNext = false;
             }
         }
     };
@@ -322,6 +331,10 @@ public class Game extends SimpleApplication {
         player.update();
         for(Mob m : mobList){
             m.update(tpf);    
+        }
+        if((System.currentTimeMillis() - shootTimer > shootInterval) && fireNext){
+            shoot();
+            shootTimer = System.currentTimeMillis();
         }
         
     }
