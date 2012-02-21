@@ -6,6 +6,7 @@ package com.TerraNullius.entity;
 
 import com.TerraNullius.Game;
 import com.jme3.app.Application;
+import com.jme3.collision.CollisionResult;
 import com.jme3.collision.CollisionResults;
 import com.jme3.material.Material;
 import com.jme3.math.ColorRGBA;
@@ -16,16 +17,15 @@ import com.jme3.scene.shape.Box;
 import java.util.ArrayList;
 
 /**
- *
+ * The general entity type.
+ * 
  * @author Griffin
  */
 
 public class Entity {
     
     Game game;
-    
-    
-
+   
     Geometry geom;
     Vector3f pos;
     Quaternion rot;
@@ -34,7 +34,7 @@ public class Entity {
     
     int damage = 0;
     int health = 100;
-    int strength = 10;
+    double strength = 1;    //Multiplier for damage
     long hurtTimer = 0;
     int hurtInterval = 500;
     
@@ -84,14 +84,28 @@ public class Entity {
 //            if((targetPos.x < m.pos.x + 0.2f && targetPos.x > m.pos.x - 0.2f) && (targetPos.y < m.pos.y + 0.2f && targetPos.y > m.pos.y - 0.2f)){
 //                collidingWith.add(m);
 //            }   
-            CollisionResults result = new CollisionResults();
-            this.geom.collideWith(m.geom, result);
+            CollisionResults results = new CollisionResults();
+            this.geom.collideWith(m.geom.getWorldBound(), results);
+            if(results.size() > 0){
+                CollisionResult closest = results.getClosestCollision();
+                Geometry tempGeom = closest.getGeometry();
+
+                if(closest.getContactPoint() != null) System.out.println("Hit " + tempGeom.getName() + " at " + closest.getContactPoint() + ", " + closest.getDistance() + " wu away.");
+            }
             //TODO: Finish this collision
         }
     }
     public void hurt(Entity e){
         damage += e.strength;
         push(e);
+        geom.getMaterial().setColor("Color", ColorRGBA.Red);
+        
+        if(damage >= health) die();
+    }
+    
+    public void hurt(Mob m){
+        damage += (m.strength * m.weap.fireDamage);
+        push(m);
         geom.getMaterial().setColor("Color", ColorRGBA.Red);
         
         if(damage >= health) die();

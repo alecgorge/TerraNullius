@@ -6,6 +6,7 @@ package com.TerraNullius.entity;
 
 import com.TerraNullius.Game;
 import com.TerraNullius.entity.Player;
+import com.TerraNullius.entity.Weapon.WeaponType;
 import com.jme3.material.Material;
 import com.jme3.math.ColorRGBA;
 import com.jme3.math.Quaternion;
@@ -22,6 +23,7 @@ public class Zombie extends Mob {
         this.game = game;
         
         health = 50;
+        weap = WeaponType.HANDS;
         
         pos = new Vector3f(40,40,1);
         rot = new Quaternion();

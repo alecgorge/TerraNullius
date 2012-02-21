@@ -40,26 +40,21 @@ import java.util.logging.*;
 public class Game extends SimpleApplication {
     
     static Game instance;
+    public static AppSettings settings;
     
-    CameraNode camNode;
-    Node playerNode;
+    public Vector2f cursorPos;
+    public long shootTimer;
+    
+    public CameraNode camNode;
+    public Node playerNode;
     public Node mobs;
-    
-    static AppSettings settings;
-    
-    //Node shootables;
-    Geometry mark;
-    Geometry line; //debug
-    
-    Vector2f cursorPos;
-    
-    long shootTimer;
-    int shootInterval = 50;
-    boolean fireNext;
     
     public Player player;
     public ArrayList<Mob> mobList = new ArrayList();
     
+    public Geometry mark;
+    public Geometry line; //debug
+
     public static void main(String[] args) {
         Game app = new Game();
         Game.instance = app;
@@ -95,7 +90,7 @@ public class Game extends SimpleApplication {
         flyCam.setEnabled(false);
         camNode = new CameraNode("Camera Node", cam);
         camNode.setControlDir(ControlDirection.SpatialToCamera);
-        camNode.setLocalTranslation(new Vector3f(25,25,16));
+        camNode.setLocalTranslation(player.getPos().add(new Vector3f(-14,-14,14)));
         camNode.lookAt(player.getPos(), Vector3f.UNIT_Z);
         playerNode.attachChild(camNode);
                 
@@ -175,7 +170,7 @@ public class Game extends SimpleApplication {
     }
     
     //Creates new zombies of number amount a random distance less than maxDist away from the player
-    private void createZombies(int amount, int maxDist){
+    public void createZombies(int amount, int maxDist){
         maxDist *= 2;   //convert radius to diameter
         Zombie zombie;
         Random rand = new Random();
@@ -205,70 +200,67 @@ public class Game extends SimpleApplication {
         return cube;
     }
     
-    public void shoot(){
-        //get rotation
-        //ray trace to target
-        //detect hit
-        //draw line to target
-        //notify target if its hit
-
-        CollisionResults results = new CollisionResults();
-
-        Vector2f mousePosNoOff = new Vector2f();
-        System.out.println(cursorPos); 
-        mousePosNoOff.x = (cursorPos.x - settings.getWidth()/2)/(settings.getWidth()/2);
-        mousePosNoOff.y = (cursorPos.y - settings.getHeight()/2)/(settings.getHeight()/2);
-        float polarAngle = mousePosNoOff.getAngle() - FastMath.PI/4;
-        float polarMag = FastMath.sqrt(FastMath.pow(mousePosNoOff.x, 2) + FastMath.pow(mousePosNoOff.y, 2));
-
-        Vector2f mousePos = new Vector2f(polarMag * FastMath.cos(polarAngle),
-                                         polarMag * FastMath.sin(polarAngle));
-
-        Vector3f playerPos = player.getWorldPos();
-
-        Vector3f rayCoords = new Vector3f(((mousePos.x * 300)),
-                                          ((mousePos.y * 300)),
-                                          1f);
-
-        Ray ray = new Ray(playerPos, rayCoords);
-        System.out.println(ray);   
-
-        Mesh lineMesh = new Mesh();
-        lineMesh.setMode(Mesh.Mode.Lines);
-        lineMesh.setLineWidth(5f);
-        lineMesh.setBuffer(VertexBuffer.Type.Position, 3, new float[]{
-            playerPos.x,
-            playerPos.y,
-            playerPos.z,
-            rayCoords.x + playerPos.x,
-            rayCoords.y + playerPos.y,
-            1f
-        });
-        lineMesh.setBuffer(VertexBuffer.Type.Index, 2, new short[]{ 0, 1 });
-        lineMesh.updateBound();
-        lineMesh.updateCounts();
-        line.setMesh(lineMesh);
-
-        mobs.collideWith(ray, results);
-
-        if (results.size() > 0) {
-            CollisionResult col = results.getCollision(0);
-            Geometry tempGeom = col.getGeometry();
-            System.out.println("  You shot " + tempGeom.getName() + " at " + col.getContactPoint() + ", " + col.getDistance() + " wu away.");
-            for(Mob m : mobList){
-                if(m.getGeom() == tempGeom ){
-                    m.hurt(player);
-                    break;
-                }
-            }
-            mark.setLocalTranslation(col.getContactPoint());
-            rootNode.attachChild(mark);
-        } else {
-            rootNode.detachChild(mark);
-        }
-          
-    }
-    
+//    public void shoot(){
+//        //get rotation
+//        //ray trace to target
+//        //detect hit
+//        //draw line to target
+//        //notify target if its hit
+//
+//        CollisionResults results = new CollisionResults();
+//
+//        Vector2f mousePosNoOff = new Vector2f();
+//        mousePosNoOff.x = (cursorPos.x - settings.getWidth()/2)/(settings.getWidth()/2);
+//        mousePosNoOff.y = (cursorPos.y - settings.getHeight()/2)/(settings.getHeight()/2);
+//        float polarAngle = mousePosNoOff.getAngle() - FastMath.PI/4;
+//        float polarMag = FastMath.sqrt(FastMath.pow(mousePosNoOff.x, 2) + FastMath.pow(mousePosNoOff.y, 2));
+//
+//        Vector2f mousePos = new Vector2f(polarMag * FastMath.cos(polarAngle),
+//                                         polarMag * FastMath.sin(polarAngle));
+//
+//        Vector3f playerPos = player.getWorldPos();
+//
+//        Vector3f rayCoords = new Vector3f(((mousePos.x * 300)),
+//                                          ((mousePos.y * 300)),
+//                                          1f);
+//
+//        Ray ray = new Ray(playerPos, rayCoords);
+//
+//        Mesh lineMesh = new Mesh();
+//        lineMesh.setMode(Mesh.Mode.Lines);
+//        lineMesh.setLineWidth(5f);
+//        lineMesh.setBuffer(VertexBuffer.Type.Position, 3, new float[]{
+//            playerPos.x,
+//            playerPos.y,
+//            playerPos.z,
+//            rayCoords.x + playerPos.x,
+//            rayCoords.y + playerPos.y,
+//            1f
+//        });
+//        lineMesh.setBuffer(VertexBuffer.Type.Index, 2, new short[]{ 0, 1 });
+//        lineMesh.updateBound();
+//        lineMesh.updateCounts();
+//        line.setMesh(lineMesh);
+//
+//        mobs.collideWith(ray, results);
+//
+//        if (results.size() > 0) {
+//            CollisionResult col = results.getCollision(0);
+//            Geometry tempGeom = col.getGeometry();
+//            System.out.println("  You shot " + tempGeom.getName() + " at " + col.getContactPoint() + ", " + col.getDistance() + " wu away.");
+//            for(Mob m : mobList){
+//                if(m.getGeom() == tempGeom ){
+//                    m.hurt(player);
+//                    break;
+//                }
+//            }
+//            mark.setLocalTranslation(col.getContactPoint());
+//            rootNode.attachChild(mark);
+//        } else {
+//            rootNode.detachChild(mark);
+//        }
+//          
+//    }
     
     private void initKeys() {
     inputManager.addMapping("Left",   new KeyTrigger(KeyInput.KEY_A));
@@ -289,9 +281,9 @@ public class Game extends SimpleApplication {
     private ActionListener actionListener = new ActionListener() {
         public void onAction(String name, boolean isPressed, float tpf) {
             if(name.equals("Left Click") && isPressed){
-                fireNext = true;
+                player.fireOn();
             }else if(!isPressed){
-                fireNext = false;
+                player.fireOff();
             }
         }
     };
@@ -319,7 +311,6 @@ public class Game extends SimpleApplication {
                 float angle = (float)(Math.PI + Math.PI/4 + Math.atan2((cursorPos.y - settings.getHeight()/2),(cursorPos.x - settings.getWidth()/2)));
                 player.setRot((new Quaternion()).fromAngles(0, 0, angle));
             }
-            System.out.println(player.getPos());
         }
     };
     
@@ -330,8 +321,8 @@ public class Game extends SimpleApplication {
         for(Mob m : mobList){
             m.update(tpf);    
         }
-        if((System.currentTimeMillis() - shootTimer > shootInterval) && fireNext){
-            shoot();
+        if((System.currentTimeMillis() - shootTimer > player.weap.fireRate * 1000) && player.isFireing()){
+            player.shoot();
             shootTimer = System.currentTimeMillis();
         }
         
