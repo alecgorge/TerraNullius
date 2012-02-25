@@ -1,12 +1,10 @@
 package com.TerraNullius;
 
-import com.TerraNullius.entity.Entity;
 import com.TerraNullius.entity.Mob;
 import com.TerraNullius.entity.Player;
 import com.TerraNullius.entity.Zombie;
 import com.jme3.app.SimpleApplication;
-import com.jme3.collision.CollisionResult;
-import com.jme3.collision.CollisionResults;
+import com.jme3.font.BitmapText;
 import com.jme3.input.KeyInput;
 import com.jme3.input.MouseInput;
 import com.jme3.input.controls.ActionListener;
@@ -16,9 +14,7 @@ import com.jme3.input.controls.MouseAxisTrigger;
 import com.jme3.input.controls.MouseButtonTrigger;
 import com.jme3.material.Material;
 import com.jme3.math.ColorRGBA;
-import com.jme3.math.FastMath;
 import com.jme3.math.Quaternion;
-import com.jme3.math.Ray;
 import com.jme3.math.Vector2f;
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.RenderManager;
@@ -29,11 +25,9 @@ import com.jme3.scene.Node;
 import com.jme3.scene.VertexBuffer;
 import com.jme3.scene.control.CameraControl.ControlDirection;
 import com.jme3.scene.shape.Box;
-import com.jme3.scene.shape.Sphere;
 import com.jme3.system.AppSettings;
 import java.util.ArrayList;
 import java.util.Random;
-import java.util.Timer;
 import java.util.logging.*;
 
 
@@ -49,11 +43,14 @@ public class Game extends SimpleApplication {
     public Node playerNode;
     public Node mobs;
     
+    //Entities
     public Player player;
     public ArrayList<Mob> mobList = new ArrayList();
     
-    public Geometry mark;
     public Geometry line; //debug
+    
+    //HUD
+    public BitmapText healthText;
 
     public static void main(String[] args) {
         Game app = new Game();
@@ -99,13 +96,6 @@ public class Game extends SimpleApplication {
         mobs = new Node("Mobs");
         rootNode.attachChild(mobs);
         createZombies(50, 30);
-        
-        //Hit detection testing - DEBUG
-        Sphere sphere = new Sphere(30, 30, 0.2f);
-        mark = new Geometry("BOOM!", sphere);
-        Material mark_mat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
-        mark_mat.setColor("Color", ColorRGBA.White);
-        mark.setMaterial(mark_mat);
                
         Mesh lineMesh = new Mesh();
         lineMesh.setMode(Mesh.Mode.Lines);
@@ -120,6 +110,13 @@ public class Game extends SimpleApplication {
         line.setMaterial(matL);
         rootNode.attachChild(line);
         
+        guiNode.detachAllChildren();
+        guiFont = assetManager.loadFont("Interface/Fonts/Default.fnt");
+        healthText = new BitmapText(guiFont, false);
+        healthText.setSize(guiFont.getCharSet().getRenderedSize());
+        healthText.setText("Health: " + player.getCurrentHealth());
+        healthText.setLocalTranslation(300, healthText.getLineHeight(), 0);
+        guiNode.attachChild(healthText);
     
         initKeys();
     }
@@ -175,17 +172,12 @@ public class Game extends SimpleApplication {
         Zombie zombie;
         Random rand = new Random();
         Vector3f offset;
-//        Material mat;
         for(int i=0; i<amount; i++){
             zombie = new Zombie(instance);
             
             offset = new Vector3f(rand.nextInt(maxDist) - maxDist/2, rand.nextInt(maxDist) - maxDist/2, 0);
             zombie.setPos(player.getPos().add(offset));
-            
-//            mat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");        
-//            mat.setColor("Color", ColorRGBA.randomColor());
-//            zombie.getGeom().setMaterial(mat);
-            
+
             mobList.add(zombie);
             mobs.attachChild(zombie.getGeom());
         }
@@ -199,68 +191,6 @@ public class Game extends SimpleApplication {
         cube.setMaterial(mat1);
         return cube;
     }
-    
-//    public void shoot(){
-//        //get rotation
-//        //ray trace to target
-//        //detect hit
-//        //draw line to target
-//        //notify target if its hit
-//
-//        CollisionResults results = new CollisionResults();
-//
-//        Vector2f mousePosNoOff = new Vector2f();
-//        mousePosNoOff.x = (cursorPos.x - settings.getWidth()/2)/(settings.getWidth()/2);
-//        mousePosNoOff.y = (cursorPos.y - settings.getHeight()/2)/(settings.getHeight()/2);
-//        float polarAngle = mousePosNoOff.getAngle() - FastMath.PI/4;
-//        float polarMag = FastMath.sqrt(FastMath.pow(mousePosNoOff.x, 2) + FastMath.pow(mousePosNoOff.y, 2));
-//
-//        Vector2f mousePos = new Vector2f(polarMag * FastMath.cos(polarAngle),
-//                                         polarMag * FastMath.sin(polarAngle));
-//
-//        Vector3f playerPos = player.getWorldPos();
-//
-//        Vector3f rayCoords = new Vector3f(((mousePos.x * 300)),
-//                                          ((mousePos.y * 300)),
-//                                          1f);
-//
-//        Ray ray = new Ray(playerPos, rayCoords);
-//
-//        Mesh lineMesh = new Mesh();
-//        lineMesh.setMode(Mesh.Mode.Lines);
-//        lineMesh.setLineWidth(5f);
-//        lineMesh.setBuffer(VertexBuffer.Type.Position, 3, new float[]{
-//            playerPos.x,
-//            playerPos.y,
-//            playerPos.z,
-//            rayCoords.x + playerPos.x,
-//            rayCoords.y + playerPos.y,
-//            1f
-//        });
-//        lineMesh.setBuffer(VertexBuffer.Type.Index, 2, new short[]{ 0, 1 });
-//        lineMesh.updateBound();
-//        lineMesh.updateCounts();
-//        line.setMesh(lineMesh);
-//
-//        mobs.collideWith(ray, results);
-//
-//        if (results.size() > 0) {
-//            CollisionResult col = results.getCollision(0);
-//            Geometry tempGeom = col.getGeometry();
-//            System.out.println("  You shot " + tempGeom.getName() + " at " + col.getContactPoint() + ", " + col.getDistance() + " wu away.");
-//            for(Mob m : mobList){
-//                if(m.getGeom() == tempGeom ){
-//                    m.hurt(player);
-//                    break;
-//                }
-//            }
-//            mark.setLocalTranslation(col.getContactPoint());
-//            rootNode.attachChild(mark);
-//        } else {
-//            rootNode.detachChild(mark);
-//        }
-//          
-//    }
     
     private void initKeys() {
     inputManager.addMapping("Left",   new KeyTrigger(KeyInput.KEY_A));
@@ -325,11 +255,21 @@ public class Game extends SimpleApplication {
             player.shoot();
             shootTimer = System.currentTimeMillis();
         }
-        
+        healthText.setText("Health: " + player.getCurrentHealth());
     }
 
     @Override
     public void simpleRender(RenderManager rm) {
         //TODO: add render code
+    }
+    
+    public void gameOver(){
+        guiNode.detachAllChildren();
+//        BitmapFont font = game.getAssetManager().loadFont("Interface/Fonts/Default.fnt");
+        BitmapText deathText = new BitmapText(guiFont, false);
+        deathText.setSize(30);
+        deathText.setText("Game Over");
+        deathText.setLocalTranslation(settings.getWidth()/2 - deathText.getLineWidth()/2, deathText.getLineHeight() + settings.getHeight()/2, 0);
+        guiNode.attachChild(deathText);
     }
 }

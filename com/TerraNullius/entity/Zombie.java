@@ -13,6 +13,7 @@ import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.shape.Box;
+import java.util.ArrayList;
 
 /**
  *
@@ -25,7 +26,7 @@ public class Zombie extends Mob {
         health = 50;
         weap = WeaponType.HANDS;
         
-        pos = new Vector3f(40,40,1);
+        pos = new Vector3f(0,0,1);
         rot = new Quaternion();
         
         speed = 0.9f;
@@ -47,17 +48,13 @@ public class Zombie extends Mob {
         Vector3f target = game.player.getWorldPos();
         
         pos = pos.add((target.subtract(pos)).normalize().mult(speed*tpf));
-        checkCollisions(pos);
-        for(Entity e : collidingWith){
-            if(e instanceof Player){
-                if(System.currentTimeMillis() - hurtTimer > hurtInterval){
-                    e.hurt(this);
-                    hurtTimer = System.currentTimeMillis();
-                }
-            }else{
-                e.push(this);
-            }
+        
+        if((System.currentTimeMillis() - hurtTimer > weap.fireRate * 1000) && pos.distance(game.player.pos) <= weap.range){
+            shoot(game.player);
+            //e.hurt(this);
+            hurtTimer = System.currentTimeMillis();
         }
+
         
         
         Quaternion old = new Quaternion(geom.getLocalRotation());

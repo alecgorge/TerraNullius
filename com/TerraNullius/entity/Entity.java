@@ -30,17 +30,20 @@ public class Entity {
     Vector3f pos;
     Quaternion rot;
     
-    ArrayList<Entity> collidingWith = new ArrayList();
+    
     
     int damage = 0;
     int health = 100;
     double strength = 1;    //Multiplier for damage
     long hurtTimer = 0;
-    int hurtInterval = 500;
     
     public void update() {
         geom.setLocalTranslation(pos);
         geom.setLocalRotation(rot);
+    }
+    
+    public int getCurrentHealth(){
+        return health - damage;
     }
     
     public void setGeom(Geometry geom){this.geom = geom;}
@@ -79,21 +82,25 @@ public class Entity {
     
     public Quaternion getRot() {return this.rot;}
     
-    public void checkCollisions(Vector3f targetPos){
+    public ArrayList<Entity> checkCollisions(Vector3f targetPos){
+        ArrayList<Entity> collidingWith = new ArrayList();
         for(Mob m : game.mobList){
-//            if((targetPos.x < m.pos.x + 0.2f && targetPos.x > m.pos.x - 0.2f) && (targetPos.y < m.pos.y + 0.2f && targetPos.y > m.pos.y - 0.2f)){
-//                collidingWith.add(m);
-//            }   
             CollisionResults results = new CollisionResults();
             this.geom.collideWith(m.geom.getWorldBound(), results);
             if(results.size() > 0){
-                CollisionResult closest = results.getClosestCollision();
-                Geometry tempGeom = closest.getGeometry();
-
-                if(closest.getContactPoint() != null) System.out.println("Hit " + tempGeom.getName() + " at " + closest.getContactPoint() + ", " + closest.getDistance() + " wu away.");
+                m.push(this);
+                collidingWith.add(m);
+//                CollisionResult closest = results.getCollision(0);
+//                Geometry tempGeom = closest.getGeometry();
+//               
+////                if(closest.getContactPoint() != null){
+//                    System.out.println("Hit " + tempGeom.getName() + " at " + closest.getContactPoint() + ", " + closest.getDistance() + " wu away.");
+//                    //collidingWith.add(m);
+////                }
             }
             //TODO: Finish this collision
         }
+        return collidingWith;
     }
     public void hurt(Entity e){
         damage += e.strength;

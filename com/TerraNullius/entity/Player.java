@@ -8,6 +8,8 @@ import com.TerraNullius.Game;
 import com.TerraNullius.entity.Weapon.WeaponType;
 import com.jme3.collision.CollisionResult;
 import com.jme3.collision.CollisionResults;
+import com.jme3.font.BitmapFont;
+import com.jme3.font.BitmapText;
 import com.jme3.material.Material;
 import com.jme3.math.ColorRGBA;
 import com.jme3.math.FastMath;
@@ -34,7 +36,7 @@ public class Player extends Mob {
         speed = 5f;
         health = 100;
         strength = 1.5;
-        weap = WeaponType.HANDS;
+        weap = WeaponType.PISTOL;
         
         Box b = new Box(new Vector3f(0,0,0), 0.5f, 0.5f, 1f);
         geom = new Geometry("Player", b);
@@ -48,11 +50,12 @@ public class Player extends Mob {
     
     @Override
     public void update() {
-        checkCollisions(pos);
-        
         //geom.setLocalTranslation(pos);
+
         pos = geom.getLocalTranslation();
         geom.setLocalRotation(rot);
+        
+        //checkCollisions(pos);
     }
     
     public void shoot(){
@@ -107,7 +110,12 @@ public class Player extends Mob {
                     }
                 }
             }
-        }
-          
+        } 
+    }
+    
+    @Override
+    public void die(){
+        game.getRootNode().detachChild(game.playerNode);
+        game.gameOver();
     }
 }

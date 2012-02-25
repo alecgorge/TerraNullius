@@ -46,57 +46,23 @@ public class Mob extends Entity{
         game.mobList.remove(this);
     }
     
-    public void shoot(){
-        //get rotation
-        //ray trace to target
-        //detect hit
-        //draw line to target
-        //notify target if its hit
-
+    public void shoot(Entity e){
         CollisionResults results = new CollisionResults();
+        
+        Vector3f thisPos = this.getWorldPos();
+        
+        Vector3f rayCoords = new Vector3f(e.pos.x, e.pos.y, 1f);
 
-        Vector2f mousePosNoOff = new Vector2f();
-        mousePosNoOff.x = (game.cursorPos.x - game.settings.getWidth()/2)/(game.settings.getWidth()/2);
-        mousePosNoOff.y = (game.cursorPos.y - game.settings.getHeight()/2)/(game.settings.getHeight()/2);
-        float polarAngle = mousePosNoOff.getAngle() - FastMath.PI/4;
-        float polarMag = FastMath.sqrt(FastMath.pow(mousePosNoOff.x, 2) + FastMath.pow(mousePosNoOff.y, 2));
+        Ray ray = new Ray(thisPos, rayCoords);
 
-        Vector2f mousePos = new Vector2f(polarMag * FastMath.cos(polarAngle), polarMag * FastMath.sin(polarAngle));
-        Vector3f playerPos = this.getWorldPos();
-        Vector3f rayCoords = new Vector3f(((mousePos.x * 300)), ((mousePos.y * 300)), 1f);
-
-        Ray ray = new Ray(playerPos, rayCoords);
-
-        //Temp line
-        Mesh lineMesh = new Mesh();
-        lineMesh.setMode(Mesh.Mode.Lines);
-        lineMesh.setLineWidth(5f);
-        lineMesh.setBuffer(VertexBuffer.Type.Position, 3, new float[]{
-            playerPos.x,
-            playerPos.y,
-            playerPos.z,
-            rayCoords.x + playerPos.x,
-            rayCoords.y + playerPos.y,
-            1f
-        });
-        lineMesh.setBuffer(VertexBuffer.Type.Index, 2, new short[]{ 0, 1 });
-        lineMesh.updateBound();
-        lineMesh.updateCounts();
-        game.line.setMesh(lineMesh);
-
-        game.mobs.collideWith(ray, results);
+        e.geom.collideWith(ray, results);
 
         if (results.size() > 0) {
             CollisionResult col = results.getCollision(0);
             Geometry tempGeom = col.getGeometry();
             if(col.getDistance() <= weap.range){
-                System.out.println("  You shot " + tempGeom.getName() + " at " + col.getContactPoint() + ", " + col.getDistance() + " wu away.");
-                for(Mob m : game.mobList){
-                    if(m.getGeom() == tempGeom ){
-                        m.hurt(this);
-                        break;
-                    }
-                }
+                System.out.println(this.geom.getName() + "  hit " + tempGeom.getName() + " at " + col.getContactPoint() + ", " + col.getDistance() + " wu away.");
+                e.hurt(this);
             }
         }
           
