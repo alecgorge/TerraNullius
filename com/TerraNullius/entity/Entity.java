@@ -27,10 +27,10 @@ public class Entity {
     Game game;
    
     Geometry geom;
-    Vector3f pos;
-    Quaternion rot;
+    Vector3f pos = new Vector3f();
+    Quaternion rot = new Quaternion();
     
-    
+    boolean dead = false;
     
     int damage = 0;
     int health = 100;
@@ -102,6 +102,7 @@ public class Entity {
         }
         return collidingWith;
     }
+    
     public void hurt(Entity e){
         damage += e.strength;
         push(e);
@@ -124,6 +125,11 @@ public class Entity {
 
     public void die(){
         game.getRootNode().detachChild(geom);
+        dead = true;
+    }
+    
+    public boolean isDead(){
+        return dead;
     }
 
     

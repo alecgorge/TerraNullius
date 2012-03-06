@@ -50,12 +50,11 @@ public class Player extends Mob {
     
     @Override
     public void update() {
-        //geom.setLocalTranslation(pos);
-
-        pos = geom.getWorldTranslation();
-        geom.setLocalRotation(rot);
-        
-        //checkCollisions(pos);
+        if(!isDead()){
+            pos = geom.getWorldTranslation();
+            geom.setLocalRotation(rot);
+            //checkCollisions(pos);
+        }
     }
     
     public void shoot(){

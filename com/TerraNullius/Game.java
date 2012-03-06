@@ -1,9 +1,13 @@
 package com.TerraNullius;
 
+import com.TerraNullius.entity.Entity;
 import com.TerraNullius.entity.Mob;
 import com.TerraNullius.entity.Player;
+import com.TerraNullius.entity.Weapon;
+import com.TerraNullius.entity.Weapon.WeaponType;
 import com.TerraNullius.entity.Zombie;
 import com.jme3.app.SimpleApplication;
+import com.jme3.bullet.BulletAppState;
 import com.jme3.font.BitmapText;
 import com.jme3.input.KeyInput;
 import com.jme3.input.MouseInput;
@@ -36,6 +40,8 @@ public class Game extends SimpleApplication {
     static Game instance;
     public static AppSettings settings;
     
+    public BulletAppState bulletAppState;
+    
     public Vector2f cursorPos;
     public long shootTimer;
     
@@ -46,11 +52,13 @@ public class Game extends SimpleApplication {
     //Entities
     public Player player;
     public ArrayList<Mob> mobList = new ArrayList();
+    public ArrayList<Entity> entityList = new ArrayList();
     
     public Geometry line; //debug
     
     //HUD
     public BitmapText healthText;
+    public BitmapText weapText;
 
     public static void main(String[] args) {
         Game app = new Game();
@@ -76,6 +84,11 @@ public class Game extends SimpleApplication {
          */
         Logger.getLogger("").setLevel(Level.SEVERE);
         
+        bulletAppState = new BulletAppState();
+        bulletAppState.getPhysicsSpace().setGravity(new Vector3f(0f,0f,-1f));
+        bulletAppState.getPhysicsSpace().setAccuracy(0.005f);
+        stateManager.attach(bulletAppState);
+        
         rootNode.attachChild(createTiles(6,0));   
         
         player = new Player(instance);
@@ -96,6 +109,7 @@ public class Game extends SimpleApplication {
         mobs = new Node("Mobs");
         rootNode.attachChild(mobs);
         createZombies(50, 30);
+        createTestWeaps();
                
         Mesh lineMesh = new Mesh();
         lineMesh.setMode(Mesh.Mode.Lines);
@@ -117,6 +131,11 @@ public class Game extends SimpleApplication {
         healthText.setText("Health: " + player.getCurrentHealth());
         healthText.setLocalTranslation(300, healthText.getLineHeight(), 0);
         guiNode.attachChild(healthText);
+        weapText = new BitmapText(guiFont, false);
+        weapText.setSize(guiFont.getCharSet().getRenderedSize());
+        weapText.setText("Weap: " + player.getWeap().toString());
+        weapText.setLocalTranslation(100, weapText.getLineHeight(), 0);
+        guiNode.attachChild(weapText);
     
         initKeys();
     }
@@ -181,6 +200,22 @@ public class Game extends SimpleApplication {
             mobList.add(zombie);
             mobs.attachChild(zombie.getGeom());
         }
+    }
+    
+        public void createTestWeaps(){
+            Weapon weap = new Weapon(WeaponType.HANDS, instance);
+            weap.setPos(player.getPos().add(new Vector3f(5f, 5f, 0f)));
+            entityList.add(weap);
+            Weapon weap1 = new Weapon(WeaponType.PISTOL, instance);
+            weap1.setPos(player.getPos().add(new Vector3f(-5f, 5f, 0f)));
+            entityList.add(weap1);
+            Weapon weap2 = new Weapon(WeaponType.MACHINEGUN, instance);
+            weap2.setPos(player.getPos().add(new Vector3f(-5f, -5f, 0f)));
+            entityList.add(weap2);
+            Weapon weap3 = new Weapon(WeaponType.RIFLE, instance);
+            weap3.setPos(player.getPos().add(new Vector3f(5f, -5f, 0f)));
+            entityList.add(weap3);
+
     }
       
     protected Geometry makeCube(String name, float x, float y, float z) {
@@ -251,11 +286,15 @@ public class Game extends SimpleApplication {
         for(Mob m : mobList){
             m.update(tpf);    
         }
-        if((System.currentTimeMillis() - shootTimer > player.weap.fireRate * 1000) && player.isFireing()){
+        for(Entity e : entityList){
+            e.update();    
+        }
+        if((System.currentTimeMillis() - shootTimer > player.getWeap().fireRate * 1000) && player.isFireing()){
             player.shoot();
             shootTimer = System.currentTimeMillis();
         }
         healthText.setText("Health: " + player.getCurrentHealth());
+        weapText.setText("Weap: " + player.getWeap().toString());
     }
 
     @Override

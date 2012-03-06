@@ -23,7 +23,7 @@ import com.jme3.scene.VertexBuffer;
  */
 public class Mob extends Entity{
     
-    public WeaponType weap;
+    WeaponType weap;
     boolean isFireing;
     float speed = 1f;
     float turnSpeed = 1f; //Higher is slower (turn interpolation time)
@@ -39,6 +39,10 @@ public class Mob extends Entity{
     public void fireOff(){isFireing = false;}
     
     public boolean isFireing(){return isFireing;}
+    
+    public void setWeap(WeaponType weap){this.weap = weap;}
+    
+    public WeaponType getWeap(){return this.weap;}
     
     @Override
     public void die(){
