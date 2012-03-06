@@ -52,7 +52,7 @@ public class Player extends Mob {
     public void update() {
         //geom.setLocalTranslation(pos);
 
-        pos = geom.getLocalTranslation();
+        pos = geom.getWorldTranslation();
         geom.setLocalRotation(rot);
         
         //checkCollisions(pos);
