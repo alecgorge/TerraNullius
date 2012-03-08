@@ -64,9 +64,12 @@ public class Weapon extends Entity {
     @Override
     public void update(){
         if(!isDead()){
-            System.out.println("Trying to move: " + pos);
-            geom.setLocalTranslation(pos);
-            geom.setLocalRotation(rot);
+            if(!pos.equals(geom.getLocalTranslation())){
+                geom.setLocalTranslation(pos);
+            }
+            if(!rot.equals(geom.getLocalRotation())){
+                geom.setLocalRotation(rot);
+            }
             CollisionResults results = new CollisionResults();
             geom.collideWith(game.player.geom.getWorldBound(), results);
             if(results.size() > 0){

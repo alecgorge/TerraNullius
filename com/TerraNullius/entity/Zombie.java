@@ -45,25 +45,27 @@ public class Zombie extends Mob {
     
     @Override
     public void update(float tpf){
-        Vector3f target = game.player.getWorldPos();
-        
-        pos = pos.add((target.subtract(pos)).normalize().mult(speed*tpf));
-        
-        if((System.currentTimeMillis() - hurtTimer > weap.fireRate * 1000) && pos.distance(game.player.pos) <= weap.range){
-            shoot(game.player);
-            //e.hurt(this);
-            hurtTimer = System.currentTimeMillis();
+        if(!isDead()){
+            Vector3f target = game.player.getWorldPos();
+
+            pos = pos.add((target.subtract(pos)).normalize().mult(speed*tpf));
+
+            if((System.currentTimeMillis() - hurtTimer > weap.fireRate * 1000) && pos.distance(game.player.pos) <= weap.range){
+                shoot(game.player);
+                //e.hurt(this);
+                hurtTimer = System.currentTimeMillis();
+            }
+
+
+
+            Quaternion old = new Quaternion(geom.getLocalRotation());
+            geom.lookAt(target, Vector3f.UNIT_Z);
+            geom.getLocalRotation().slerp(old, turnSpeed); // the higher the value, the slower rotation
+
+            geom.setLocalTranslation(pos);
+            rot = geom.getLocalRotation();
+
+            //mat.setColor("Color", ColorRGBA.Black);
         }
-
-        
-        
-        Quaternion old = new Quaternion(geom.getLocalRotation());
-        geom.lookAt(target, Vector3f.UNIT_Z);
-        geom.getLocalRotation().slerp(old, turnSpeed); // the higher the value, the slower rotation
-
-        geom.setLocalTranslation(pos);
-        rot = geom.getLocalRotation();
-        
-        //mat.setColor("Color", ColorRGBA.Black);
     }
 }

@@ -6,6 +6,7 @@ import com.TerraNullius.entity.Player;
 import com.TerraNullius.entity.Weapon;
 import com.TerraNullius.entity.Weapon.WeaponType;
 import com.TerraNullius.entity.Zombie;
+import com.TerraNullius.physics.TNPhysicsListener;
 import com.jme3.app.SimpleApplication;
 import com.jme3.bullet.BulletAppState;
 import com.jme3.font.BitmapText;
@@ -85,9 +86,10 @@ public class Game extends SimpleApplication {
         Logger.getLogger("").setLevel(Level.SEVERE);
         
         bulletAppState = new BulletAppState();
+        stateManager.attach(bulletAppState);
         bulletAppState.getPhysicsSpace().setGravity(new Vector3f(0f,0f,-1f));
         bulletAppState.getPhysicsSpace().setAccuracy(0.005f);
-        stateManager.attach(bulletAppState);
+        TNPhysicsListener pListener = new TNPhysicsListener(bulletAppState);
         
         rootNode.attachChild(createTiles(6,0));   
         

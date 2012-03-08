@@ -96,6 +96,8 @@ public class Player extends Mob {
         game.line.setMesh(lineMesh);
 
         game.mobs.collideWith(ray, results);
+        
+        Bullet bul = new Bullet(game, playerPos, rayCoords);
 
         if (results.size() > 0) {
             CollisionResult col = results.getCollision(0);
