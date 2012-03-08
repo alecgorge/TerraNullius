@@ -200,7 +200,6 @@ public class Game extends SimpleApplication {
             zombie.setPos(player.getPos().add(offset));
 
             mobList.add(zombie);
-            mobs.attachChild(zombie.getGeom());
         }
     }
     
