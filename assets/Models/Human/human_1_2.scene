@@ -1,0 +1,77 @@
+<scene exported_by="Griffin" formatVersion="1.0.1" previous_export_time="0" export_time="1330133270.366" >
+	<nodes >
+		<node name="Spot.001" >
+			<position y="-2.092887" x="7.280972" z="-9.667600" />
+			<rotation qy="-0.199285" qx="-0.726764" qz="-0.236083" qw="0.613485" />
+			<scale y="1.000000" x="1.000000" z="1.000000" />
+			<game >
+				<sensors />
+				<actuators />
+			</game>
+			<light shadow="true" type="spot" name="Spot.001" powerScale="3.3799996376037598" >
+				<position y="-2.092887" x="7.280972" z="-9.667600" />
+				<lightAttenuation range="5000" quadratic="0.0" constant="1.0" linear="0.04" />
+				<direction y="0.168" x="-0.0" z="-0.986" />
+				<spotLightRange outer="0.7853981852531433" inner="0.6675884527838338" falloff="1.0" />
+				<colourDiffuse r="1.0" b="1.0" g="1.0" />
+				<colourSpecular r="1.0" b="1.0" g="1.0" />
+				<colourShadow r="1.0" b="1.0" g="1.0" />
+			</light>
+		</node>
+		<node name="Spot" >
+			<position y="7.177515" x="-3.604692" z="5.388234" />
+			<rotation qy="-0.249947" qx="0.329686" qz="0.090969" qw="0.905847" />
+			<scale y="1.000000" x="1.000000" z="1.000000" />
+			<game >
+				<sensors />
+				<actuators />
+			</game>
+			<light shadow="true" type="spot" name="Spot" powerScale="3.3799996376037598" >
+				<position y="7.177515" x="-3.604692" z="5.388234" />
+				<lightAttenuation range="5000" quadratic="0.0" constant="1.0" linear="0.04" />
+				<direction y="-0.766" x="0.0" z="0.643" />
+				<spotLightRange outer="0.7853981852531433" inner="0.6675884527838338" falloff="1.0" />
+				<colourDiffuse r="1.0" b="1.0" g="1.0" />
+				<colourSpecular r="1.0" b="1.0" g="1.0" />
+				<colourShadow r="1.0" b="1.0" g="1.0" />
+			</light>
+		</node>
+		<node name="Camera" >
+			<position y="2.714443" x="2.007891" z="2.173489" />
+			<rotation qy="0.336060" qx="0.432851" qz="-0.172830" qw="0.818434" />
+			<scale y="1.000000" x="1.000000" z="1.000000" />
+			<game >
+				<sensors />
+				<actuators />
+			</game>
+			<camera projectionType="perspective" fov="49.134342641202636" name="Camera" >
+				<clipping nearPlaneDist="0.10000000149011612" farPlaneDist="100.0" />
+			</camera>
+		</node>
+		<node name="MaleArm" >
+			<position y="0.000000" x="0.000000" z="-0.000000" />
+			<rotation qy="0.000000" qx="0.000000" qz="-0.000000" qw="1.000000" />
+			<scale y="1.000000" x="1.000000" z="1.000000" />
+			<game >
+				<sensors />
+				<actuators />
+			</game>
+			<node name="HumanMale" >
+				<position y="0.000000" x="0.000000" z="-0.000000" />
+				<rotation qy="-0.000000" qx="0.000000" qz="-0.000000" qw="1.000000" />
+				<scale y="1.000000" x="1.000000" z="1.000000" />
+				<game >
+					<sensors />
+					<actuators />
+				</game>
+				<entity anisotropic_friction="False" lock_trans_y="False" damping_trans="0.02539999969303608" damping_rot="0.18000000715255737" inertia_tensor="0.4000000059604645" actor="False" velocity_min="0.0" lock_trans_z="False" physics_type="STATIC" lock_trans_x="False" meshFile="meHumanMale.mesh" friction_y="1.0" friction_x="1.0" friction_z="1.0" velocity_max="0.0" ghost="False" name="meHumanMale" mass_radius="1.0" mass="1.0" lock_rot_x="False" lock_rot_y="False" lock_rot_z="False" />
+			</node>
+		</node>
+	</nodes>
+	<externals />
+	<environment >
+		<colourBackground r="1.0" b="1.0" g="1.0" />
+		<colourAmbient r="0.0" b="0.0" g="0.0" />
+		<colourDiffuse r="1.0" b="1.0" g="1.0" />
+	</environment>
+</scene>
