@@ -30,7 +30,7 @@ public class Player extends Mob {
     public Player(Game game){
         this.game = game;
         
-        pos = new Vector3f(40,40,1);
+        pos = new Vector3f(0,1,0);
         rot = new Quaternion();
         
         speed = 5f;
@@ -38,7 +38,7 @@ public class Player extends Mob {
         strength = 1.5;
         weap = WeaponType.PISTOL;
         
-        Box b = new Box(new Vector3f(0,0,0), 0.5f, 0.5f, 1f);
+        Box b = new Box(Vector3f.ZERO, 0.5f, 1f, 0.5f);
         geom = new Geometry("Player", b);
         Material mat = new Material(game.getAssetManager(), "Common/MatDefs/Misc/Unshaded.j3md");
         mat.setColor("Color", ColorRGBA.White);
@@ -78,24 +78,26 @@ public class Player extends Mob {
 
         Ray ray = new Ray(playerPos, rayCoords);
 
-        //Temp line
-        Mesh lineMesh = new Mesh();
-        lineMesh.setMode(Mesh.Mode.Lines);
-        lineMesh.setLineWidth(5f);
-        lineMesh.setBuffer(VertexBuffer.Type.Position, 3, new float[]{
-            playerPos.x,
-            playerPos.y,
-            playerPos.z,
-            rayCoords.x + playerPos.x,
-            rayCoords.y + playerPos.y,
-            1f
-        });
-        lineMesh.setBuffer(VertexBuffer.Type.Index, 2, new short[]{ 0, 1 });
-        lineMesh.updateBound();
-        lineMesh.updateCounts();
-        game.line.setMesh(lineMesh);
+//        //Temp line
+//        Mesh lineMesh = new Mesh();
+//        lineMesh.setMode(Mesh.Mode.Lines);
+//        lineMesh.setLineWidth(5f);
+//        lineMesh.setBuffer(VertexBuffer.Type.Position, 3, new float[]{
+//            playerPos.x,
+//            playerPos.y,
+//            playerPos.z,
+//            rayCoords.x + playerPos.x,
+//            rayCoords.y + playerPos.y,
+//            1f
+//        });
+//        lineMesh.setBuffer(VertexBuffer.Type.Index, 2, new short[]{ 0, 1 });
+//        lineMesh.updateBound();
+//        lineMesh.updateCounts();
+//        game.line.setMesh(lineMesh);
 
         game.mobs.collideWith(ray, results);
+        
+        Bullet bul = new Bullet(game, playerPos, rayCoords);
 
         if (results.size() > 0) {
             CollisionResult col = results.getCollision(0);

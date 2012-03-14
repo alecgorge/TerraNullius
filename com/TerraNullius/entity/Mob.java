@@ -5,15 +5,12 @@
 package com.TerraNullius.entity;
 
 import com.TerraNullius.entity.Weapon.WeaponType;
+import com.jme3.bullet.control.CharacterControl;
 import com.jme3.collision.CollisionResult;
 import com.jme3.collision.CollisionResults;
-import com.jme3.math.FastMath;
 import com.jme3.math.Ray;
-import com.jme3.math.Vector2f;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Geometry;
-import com.jme3.scene.Mesh;
-import com.jme3.scene.VertexBuffer;
 
 
 /**
@@ -23,6 +20,7 @@ import com.jme3.scene.VertexBuffer;
  */
 public class Mob extends Entity{
     
+    CharacterControl physChar;
     WeaponType weap;
     boolean isFireing;
     float speed = 1f;
@@ -43,6 +41,11 @@ public class Mob extends Entity{
     public void setWeap(WeaponType weap){this.weap = weap;}
     
     public WeaponType getWeap(){return this.weap;}
+    
+    public void setPos(Vector3f pos){
+        this.pos = pos;
+        physChar.warp(pos);
+    }
     
     @Override
     public void die(){

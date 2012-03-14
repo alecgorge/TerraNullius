@@ -6,6 +6,7 @@ import com.TerraNullius.entity.Player;
 import com.TerraNullius.entity.Weapon;
 import com.TerraNullius.entity.Weapon.WeaponType;
 import com.TerraNullius.entity.Zombie;
+import com.TerraNullius.physics.TNPhysicsListener;
 import com.jme3.app.SimpleApplication;
 import com.jme3.bullet.BulletAppState;
 import com.jme3.font.BitmapText;
@@ -29,7 +30,9 @@ import com.jme3.scene.Node;
 import com.jme3.scene.VertexBuffer;
 import com.jme3.scene.control.CameraControl.ControlDirection;
 import com.jme3.scene.shape.Box;
+import com.jme3.scene.shape.Quad;
 import com.jme3.system.AppSettings;
+import com.jme3.texture.Texture;
 import java.util.ArrayList;
 import java.util.Random;
 import java.util.logging.*;
@@ -85,11 +88,22 @@ public class Game extends SimpleApplication {
         Logger.getLogger("").setLevel(Level.SEVERE);
         
         bulletAppState = new BulletAppState();
-        bulletAppState.getPhysicsSpace().setGravity(new Vector3f(0f,0f,-1f));
-        bulletAppState.getPhysicsSpace().setAccuracy(0.005f);
         stateManager.attach(bulletAppState);
+        bulletAppState.getPhysicsSpace().setGravity(new Vector3f(0f,-1f,0f));
+        bulletAppState.getPhysicsSpace().setAccuracy(0.005f);
+        TNPhysicsListener pListener = new TNPhysicsListener(bulletAppState);
         
-        rootNode.attachChild(createTiles(6,0));   
+        //rootNode.attachChild(createTiles(6,0));
+        Box b = new Box(Vector3f.ZERO, 128f, 0.1f, 128f);
+        Geometry ground = new Geometry("Ground", b);
+        Material mat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
+        mat.setColor("Color", ColorRGBA.Green);
+        Texture groundTex = assetManager.loadTexture("Textures/BlandTile.png");
+        groundTex.setWrap(Texture.WrapMode.Repeat);
+        mat.setTexture("ColorMap", groundTex);
+        b.scaleTextureCoordinates(new Vector2f(64f,64f));
+        ground.setMaterial(mat);
+        rootNode.attachChild(ground);
         
         player = new Player(instance);
                 
@@ -100,8 +114,8 @@ public class Game extends SimpleApplication {
         flyCam.setEnabled(false);
         camNode = new CameraNode("Camera Node", cam);
         camNode.setControlDir(ControlDirection.SpatialToCamera);
-        camNode.setLocalTranslation(player.getPos().add(new Vector3f(-14,-14,14)));
-        camNode.lookAt(player.getPos(), Vector3f.UNIT_Z);
+        camNode.setLocalTranslation(player.getPos().add(new Vector3f(-14,14,-14)));
+        camNode.lookAt(player.getPos(), Vector3f.UNIT_Y);
         playerNode.attachChild(camNode);
                 
         rootNode.attachChild(playerNode);
@@ -111,18 +125,18 @@ public class Game extends SimpleApplication {
         createZombies(50, 30);
         createTestWeaps();
                
-        Mesh lineMesh = new Mesh();
-        lineMesh.setMode(Mesh.Mode.Lines);
-        lineMesh.setLineWidth(5f);
-        lineMesh.setBuffer(VertexBuffer.Type.Position, 3, new float[]{0,0,0,1,1,1});
-        lineMesh.setBuffer(VertexBuffer.Type.Index, 2, new short[]{ 0, 1 });
-        lineMesh.updateBound();
-        lineMesh.updateCounts();
-        line = new Geometry("line", lineMesh);
-        Material matL = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
-        matL.setColor("Color", ColorRGBA.Black);
-        line.setMaterial(matL);
-        rootNode.attachChild(line);
+//        Mesh lineMesh = new Mesh();
+//        lineMesh.setMode(Mesh.Mode.Lines);
+//        lineMesh.setLineWidth(5f);
+//        lineMesh.setBuffer(VertexBuffer.Type.Position, 3, new float[]{0,0,0,1,1,1});
+//        lineMesh.setBuffer(VertexBuffer.Type.Index, 2, new short[]{ 0, 1 });
+//        lineMesh.updateBound();
+//        lineMesh.updateCounts();
+//        line = new Geometry("line", lineMesh);
+//        Material matL = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
+//        matL.setColor("Color", ColorRGBA.Black);
+//        line.setMaterial(matL);
+//        rootNode.attachChild(line);
         
         guiNode.detachAllChildren();
         guiFont = assetManager.loadFont("Interface/Fonts/Default.fnt");
@@ -139,51 +153,6 @@ public class Game extends SimpleApplication {
     
         initKeys();
     }
-   
-    //creates grid of 2^(depth+1) tiles as background
-    private Node createTiles(int depth, int index){
-        Node n = new Node("n" + depth);
-        if(depth > 1){
-            for(int i=0;i<=3;i++) n.attachChild(createTiles(depth-1, i));
-        }else{
-            for(int i=0;i<=3;i++){
-                Box b = new Box(getOffsetFromIndex(i,depth-1), 1,1,0);
-                Geometry geom = new Geometry("Box", b);
-
-                Material mat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
-                mat.setColor("Color", getColorFromIndex(i));
-                geom.setMaterial(mat);
-
-                n.attachChild(geom);
-            }  
-        }
-        n.move(getOffsetFromIndex(index,depth));
-        return n;
-    }
-    
-    private Vector3f getOffsetFromIndex(int index, int tier){
-        if(index==0){
-            return new Vector3f((int)Math.pow(2, tier),(int)Math.pow(2, tier),0);
-        }else if(index==1){
-            return new Vector3f((int)Math.pow(2, tier),-(int)Math.pow(2, tier),0);
-        }else if(index==2){
-            return new Vector3f(-(int)Math.pow(2, tier),(int)Math.pow(2, tier),0);
-        }else{
-            return new Vector3f(-(int)Math.pow(2, tier),-(int)Math.pow(2, tier),0); 
-        }
-    }
-    
-    private ColorRGBA getColorFromIndex(int index){
-        if(index==0){
-            return ColorRGBA.Blue;
-        }else if(index==1){
-            return ColorRGBA.Green;
-        }else if(index==2){
-            return ColorRGBA.Red;
-        }else{
-            return ColorRGBA.Yellow; 
-        }
-    }
     
     //Creates new zombies of number amount a random distance less than maxDist away from the player
     public void createZombies(int amount, int maxDist){
@@ -198,23 +167,22 @@ public class Game extends SimpleApplication {
             zombie.setPos(player.getPos().add(offset));
 
             mobList.add(zombie);
-            mobs.attachChild(zombie.getGeom());
         }
     }
     
-        public void createTestWeaps(){
-            Weapon weap = new Weapon(WeaponType.HANDS, instance);
-            weap.setPos(player.getPos().add(new Vector3f(5f, 5f, 0f)));
-            entityList.add(weap);
-            Weapon weap1 = new Weapon(WeaponType.PISTOL, instance);
-            weap1.setPos(player.getPos().add(new Vector3f(-5f, 5f, 0f)));
-            entityList.add(weap1);
-            Weapon weap2 = new Weapon(WeaponType.MACHINEGUN, instance);
-            weap2.setPos(player.getPos().add(new Vector3f(-5f, -5f, 0f)));
-            entityList.add(weap2);
-            Weapon weap3 = new Weapon(WeaponType.RIFLE, instance);
-            weap3.setPos(player.getPos().add(new Vector3f(5f, -5f, 0f)));
-            entityList.add(weap3);
+    public void createTestWeaps(){
+        Weapon weap = new Weapon(WeaponType.HANDS, instance);
+        weap.setPos(player.getPos().add(new Vector3f(5f, 5f, 0f)));
+        entityList.add(weap);
+        Weapon weap1 = new Weapon(WeaponType.PISTOL, instance);
+        weap1.setPos(player.getPos().add(new Vector3f(-5f, 5f, 0f)));
+        entityList.add(weap1);
+        Weapon weap2 = new Weapon(WeaponType.MACHINEGUN, instance);
+        weap2.setPos(player.getPos().add(new Vector3f(-5f, -5f, 0f)));
+        entityList.add(weap2);
+        Weapon weap3 = new Weapon(WeaponType.RIFLE, instance);
+        weap3.setPos(player.getPos().add(new Vector3f(5f, -5f, 0f)));
+        entityList.add(weap3);
 
     }
       
@@ -255,26 +223,26 @@ public class Game extends SimpleApplication {
     
     private AnalogListener analogListener = new AnalogListener() {
         public void onAnalog(String name, float value, float tpf) {
-            if (name.equals("Right")) {
-                playerNode.move(tpf*player.getSpeed(),-tpf*player.getSpeed(), 0);
-                player.move(tpf*player.getSpeed(),-tpf*player.getSpeed(), 0);
-            }
             if (name.equals("Left")) {
-                playerNode.move(-tpf*player.getSpeed(), tpf*player.getSpeed(), 0);
-                player.move(-tpf*player.getSpeed(), tpf*player.getSpeed(), 0);                
+                playerNode.move(tpf*player.getSpeed(), 0, -tpf*player.getSpeed());
+                player.move(tpf*player.getSpeed(), 0, -tpf*player.getSpeed());
+            }
+            if (name.equals("Right")) {
+                playerNode.move(-tpf*player.getSpeed(), 0,  tpf*player.getSpeed());
+                player.move(-tpf*player.getSpeed(), 0,  tpf*player.getSpeed());                
             }
             if (name.equals("Up")) {
-                playerNode.move(tpf*player.getSpeed(),tpf*player.getSpeed(), 0);
-                player.move(tpf*player.getSpeed(),tpf*player.getSpeed(), 0);
+                playerNode.move(tpf*player.getSpeed(), 0, tpf*player.getSpeed());
+                player.move(tpf*player.getSpeed(), 0, tpf*player.getSpeed());
             }
             if (name.equals("Down")) {
-                playerNode.move(-tpf*player.getSpeed(),-tpf*player.getSpeed(), 0);
-                player.move(-tpf*player.getSpeed(),-tpf*player.getSpeed(), 0);
+                playerNode.move(-tpf*player.getSpeed(), 0, -tpf*player.getSpeed());
+                player.move(-tpf*player.getSpeed(), 0, -tpf*player.getSpeed());
             }            
             if (name.equals("Mouse Up") || name.equals("Mouse Down") || name.equals("Mouse Right") || name.equals("Mouse Left")) {
                 cursorPos = inputManager.getCursorPosition();
                 float angle = (float)(Math.PI + Math.PI/4 + Math.atan2((cursorPos.y - settings.getHeight()/2),(cursorPos.x - settings.getWidth()/2)));
-                player.setRot((new Quaternion()).fromAngles(0, 0, angle));
+                player.setRot((new Quaternion()).fromAngles(0, angle, 0));
             }
         }
     };

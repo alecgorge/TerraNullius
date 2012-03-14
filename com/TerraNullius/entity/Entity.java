@@ -90,15 +90,7 @@ public class Entity {
             if(results.size() > 0){
                 m.push(this);
                 collidingWith.add(m);
-//                CollisionResult closest = results.getCollision(0);
-//                Geometry tempGeom = closest.getGeometry();
-//               
-////                if(closest.getContactPoint() != null){
-//                    System.out.println("Hit " + tempGeom.getName() + " at " + closest.getContactPoint() + ", " + closest.getDistance() + " wu away.");
-//                    //collidingWith.add(m);
-////                }
             }
-            //TODO: Finish this collision
         }
         return collidingWith;
     }
