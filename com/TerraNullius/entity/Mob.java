@@ -51,6 +51,7 @@ public class Mob extends Entity{
     public void die(){
         game.mobs.detachChild(geom);
         game.mobList.remove(this);
+        game.bulletAppState.getPhysicsSpace().remove(physChar);
     }
     
     public void shoot(Entity e){

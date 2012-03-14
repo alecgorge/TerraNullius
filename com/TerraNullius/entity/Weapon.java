@@ -17,7 +17,7 @@ import com.jme3.scene.shape.Box;
  *
  * @author Griffin
  */
-public class Weapon extends Entity {
+public class Weapon extends Collectable {
 
     public enum WeaponType{
         HANDS(0.5, 10, 2, 0),
@@ -47,9 +47,10 @@ public class Weapon extends Entity {
         
         health = 100;
         strength = 0;
+        pos = new Vector3f(0,10,0);
         
         //TODO: Add model based on modelNum
-        Box b = new Box(new Vector3f(0,0,0), 0.5f, 0.5f, 0.25f);
+        Box b = new Box(Vector3f.ZERO, 0.5f, 0.25f, 0.5f);
         geom = new Geometry("Weapon", b);
         Material mat = new Material(game.getAssetManager(), "Common/MatDefs/Misc/Unshaded.j3md");
         mat.setColor("Color", ColorRGBA.Pink);
@@ -58,24 +59,7 @@ public class Weapon extends Entity {
         
         //TODO: Add corresponding animation to modelNum
         
+
         update();
-    }
-    
-    @Override
-    public void update(){
-        if(!isDead()){
-            if(!pos.equals(geom.getLocalTranslation())){
-                geom.setLocalTranslation(pos);
-            }
-            if(!rot.equals(geom.getLocalRotation())){
-                geom.setLocalRotation(rot);
-            }
-            CollisionResults results = new CollisionResults();
-            geom.collideWith(game.player.geom.getWorldBound(), results);
-            if(results.size() > 0){
-                game.player.setWeap(this.weapType);
-                die();
-            }
-        }
     }
 }

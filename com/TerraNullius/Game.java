@@ -9,6 +9,8 @@ import com.TerraNullius.entity.Zombie;
 import com.TerraNullius.physics.TNPhysicsListener;
 import com.jme3.app.SimpleApplication;
 import com.jme3.bullet.BulletAppState;
+import com.jme3.bullet.collision.shapes.BoxCollisionShape;
+import com.jme3.bullet.control.RigidBodyControl;
 import com.jme3.font.BitmapText;
 import com.jme3.input.KeyInput;
 import com.jme3.input.MouseInput;
@@ -25,12 +27,9 @@ import com.jme3.math.Vector3f;
 import com.jme3.renderer.RenderManager;
 import com.jme3.scene.CameraNode;
 import com.jme3.scene.Geometry;
-import com.jme3.scene.Mesh;
 import com.jme3.scene.Node;
-import com.jme3.scene.VertexBuffer;
 import com.jme3.scene.control.CameraControl.ControlDirection;
 import com.jme3.scene.shape.Box;
-import com.jme3.scene.shape.Quad;
 import com.jme3.system.AppSettings;
 import com.jme3.texture.Texture;
 import java.util.ArrayList;
@@ -103,10 +102,14 @@ public class Game extends SimpleApplication {
         mat.setTexture("ColorMap", groundTex);
         b.scaleTextureCoordinates(new Vector2f(64f,64f));
         ground.setMaterial(mat);
+        RigidBodyControl groundPhys = new RigidBodyControl(0f);
+//        groundPhys.setFriction(1f);
+//        groundPhys.setKinematic(false); 
+        ground.addControl(groundPhys);
+        bulletAppState.getPhysicsSpace().add(groundPhys);
         rootNode.attachChild(ground);
         
         player = new Player(instance);
-                
         playerNode = new Node("PlayerNode");
         playerNode.attachChild(player.getGeom());
         
@@ -122,7 +125,8 @@ public class Game extends SimpleApplication {
         
         mobs = new Node("Mobs");
         rootNode.attachChild(mobs);
-        createZombies(50, 30);
+        createZombies(20, 30);
+        
         createTestWeaps();
                
 //        Mesh lineMesh = new Mesh();
@@ -163,7 +167,7 @@ public class Game extends SimpleApplication {
         for(int i=0; i<amount; i++){
             zombie = new Zombie(instance);
             
-            offset = new Vector3f(rand.nextInt(maxDist) - maxDist/2, rand.nextInt(maxDist) - maxDist/2, 0);
+            offset = new Vector3f(rand.nextInt(maxDist) - maxDist/2, 0, rand.nextInt(maxDist) - maxDist/2);
             zombie.setPos(player.getPos().add(offset));
 
             mobList.add(zombie);
@@ -172,16 +176,16 @@ public class Game extends SimpleApplication {
     
     public void createTestWeaps(){
         Weapon weap = new Weapon(WeaponType.HANDS, instance);
-        weap.setPos(player.getPos().add(new Vector3f(5f, 5f, 0f)));
+        weap.setPos(player.getPos().add(new Vector3f(5f, 0f, 5f)));
         entityList.add(weap);
         Weapon weap1 = new Weapon(WeaponType.PISTOL, instance);
-        weap1.setPos(player.getPos().add(new Vector3f(-5f, 5f, 0f)));
+        weap1.setPos(player.getPos().add(new Vector3f(-5f, 0f, 5f)));
         entityList.add(weap1);
         Weapon weap2 = new Weapon(WeaponType.MACHINEGUN, instance);
-        weap2.setPos(player.getPos().add(new Vector3f(-5f, -5f, 0f)));
+        weap2.setPos(player.getPos().add(new Vector3f(-5f, 0f, -5f)));
         entityList.add(weap2);
         Weapon weap3 = new Weapon(WeaponType.RIFLE, instance);
-        weap3.setPos(player.getPos().add(new Vector3f(5f, -5f, 0f)));
+        weap3.setPos(player.getPos().add(new Vector3f(5f, 0f, -5f)));
         entityList.add(weap3);
 
     }

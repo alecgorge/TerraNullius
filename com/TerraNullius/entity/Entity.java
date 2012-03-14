@@ -27,7 +27,7 @@ public class Entity {
     Game game;
    
     Geometry geom;
-    Vector3f pos = new Vector3f();
+    Vector3f pos = Vector3f.ZERO;
     Quaternion rot = new Quaternion();
     
     boolean dead = false;

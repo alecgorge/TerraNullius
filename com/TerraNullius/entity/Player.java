@@ -44,7 +44,7 @@ public class Player extends Mob {
         mat.setColor("Color", ColorRGBA.White);
         geom.setMaterial(mat);
         geom.setLocalTranslation(pos);
-        
+
         update();
     }
     
@@ -54,6 +54,12 @@ public class Player extends Mob {
             pos = geom.getWorldTranslation();
             geom.setLocalRotation(rot);
             //checkCollisions(pos);
+        }
+    }
+    
+    public void give(Entity e){
+        if(e instanceof Weapon){
+            weap = ((Weapon)e).weapType;
         }
     }
     
@@ -74,7 +80,7 @@ public class Player extends Mob {
 
         Vector2f mousePos = new Vector2f(polarMag * FastMath.cos(polarAngle), polarMag * FastMath.sin(polarAngle));
         Vector3f playerPos = this.getWorldPos();
-        Vector3f rayCoords = new Vector3f(((mousePos.x * 300)), ((mousePos.y * 300)), 1f);
+        Vector3f rayCoords = new Vector3f(((mousePos.y * 300)), 1f, ((mousePos.x * 300)));
 
         Ray ray = new Ray(playerPos, rayCoords);
 
