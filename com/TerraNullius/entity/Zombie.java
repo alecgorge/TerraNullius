@@ -38,6 +38,13 @@ public class Zombie extends Mob {
         mat.setColor("Color", ColorRGBA.Black);
         geom.setMaterial(mat);
         game.mobs.attachChild(geom);
+<<<<<<< HEAD
+=======
+        
+        physChar = new CharacterControl(new CapsuleCollisionShape(1.5f, 6f, 1), 0.01f);
+        geom.addControl(physChar);
+        game.bulletAppState.getPhysicsSpace().add(physChar);
+>>>>>>> 4aee797989ae19880f56a3efa4624c558693cb6d
         
         physChar = new CharacterControl(new CapsuleCollisionShape(.5f, 1f, 1), 0.01f);
         geom.addControl(physChar);
@@ -51,11 +58,17 @@ public class Zombie extends Mob {
     @Override
     public void update(float tpf){
         if(!isDead()){
+<<<<<<< HEAD
             Vector3f target = game.player.getPos();
 
 //            pos = pos.add((target.subtract(pos)).normalize().mult(speed*tpf));
             pos = physChar.getPhysicsLocation();
             //System.out.println(pos);
+=======
+            Vector3f target = game.player.getWorldPos();
+
+            pos = pos.add((target.subtract(pos)).normalize());
+>>>>>>> 4aee797989ae19880f56a3efa4624c558693cb6d
 
             if((System.currentTimeMillis() - hurtTimer > weap.fireRate * 1000) && pos.distance(game.player.pos) <= weap.range){
                 shoot(game.player);
@@ -63,11 +76,19 @@ public class Zombie extends Mob {
                 hurtTimer = System.currentTimeMillis();
             }
             Quaternion old = new Quaternion(geom.getLocalRotation());
+<<<<<<< HEAD
             geom.lookAt(target, Vector3f.UNIT_Y);
             geom.getLocalRotation().slerp(old, turnSpeed); // the higher the value, the slower rotation
 
             //geom.setLocalTranslation(pos);
             physChar.setWalkDirection(target.subtract(pos).normalize().mult(speed));
+=======
+            geom.lookAt(target, Vector3f.UNIT_Z);
+            geom.getLocalRotation().slerp(old, turnSpeed); // the higher the value, the slower rotation
+
+            //geom.setLocalTranslation(pos);
+            physChar.setWalkDirection(pos);
+>>>>>>> 4aee797989ae19880f56a3efa4624c558693cb6d
             rot = geom.getLocalRotation();
 
             //mat.setColor("Color", ColorRGBA.Black);

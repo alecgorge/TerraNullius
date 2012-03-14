@@ -88,7 +88,11 @@ public class Game extends SimpleApplication {
         
         bulletAppState = new BulletAppState();
         stateManager.attach(bulletAppState);
+<<<<<<< HEAD
         bulletAppState.getPhysicsSpace().setGravity(new Vector3f(0f,-1f,0f));
+=======
+        bulletAppState.getPhysicsSpace().setGravity(new Vector3f(0f,0f,-1f));
+>>>>>>> 4aee797989ae19880f56a3efa4624c558693cb6d
         bulletAppState.getPhysicsSpace().setAccuracy(0.005f);
         TNPhysicsListener pListener = new TNPhysicsListener(bulletAppState);
         
