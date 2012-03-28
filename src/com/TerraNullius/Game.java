@@ -1,29 +1,16 @@
 package com.TerraNullius;
 
-import com.TerraNullius.entity.Entity;
-import com.TerraNullius.entity.Mob;
-import com.TerraNullius.entity.Player;
-import com.TerraNullius.entity.Weapon;
+import com.TerraNullius.entity.*;
 import com.TerraNullius.entity.Weapon.WeaponType;
-import com.TerraNullius.entity.Zombie;
 import com.TerraNullius.physics.TNPhysicsListener;
 import com.jme3.app.SimpleApplication;
 import com.jme3.bullet.BulletAppState;
-import com.jme3.bullet.collision.shapes.BoxCollisionShape;
 import com.jme3.bullet.control.RigidBodyControl;
 import com.jme3.font.BitmapText;
-import com.jme3.input.KeyInput;
-import com.jme3.input.MouseInput;
-import com.jme3.input.controls.ActionListener;
-import com.jme3.input.controls.AnalogListener;
-import com.jme3.input.controls.KeyTrigger;
-import com.jme3.input.controls.MouseAxisTrigger;
-import com.jme3.input.controls.MouseButtonTrigger;
+import com.jme3.input.*;
+import com.jme3.input.controls.*;
 import com.jme3.material.Material;
-import com.jme3.math.ColorRGBA;
-import com.jme3.math.Quaternion;
-import com.jme3.math.Vector2f;
-import com.jme3.math.Vector3f;
+import com.jme3.math.*;
 import com.jme3.renderer.RenderManager;
 import com.jme3.scene.CameraNode;
 import com.jme3.scene.Geometry;
@@ -80,20 +67,16 @@ public class Game extends SimpleApplication {
 
     @Override
     public void simpleInitApp() {
-        /*
-         * TODO: Look into using RigidBodyControl for everything in physics so we dont have to use walkDirection()
-         * 
-         */
         Logger.getLogger("").setLevel(Level.SEVERE);
         
+        //Physics
         bulletAppState = new BulletAppState();
         stateManager.attach(bulletAppState);
         bulletAppState.getPhysicsSpace().setGravity(new Vector3f(0f,-1f,0f));
-
         bulletAppState.getPhysicsSpace().setAccuracy(0.005f);
         TNPhysicsListener pListener = new TNPhysicsListener(bulletAppState);
         
-        //rootNode.attachChild(createTiles(6,0));
+        //Ground
         Box b = new Box(Vector3f.ZERO, 128f, 0.1f, 128f);
         Geometry ground = new Geometry("Ground", b);
         Material mat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
@@ -110,9 +93,10 @@ public class Game extends SimpleApplication {
         bulletAppState.getPhysicsSpace().add(groundPhys);
         rootNode.attachChild(ground);
         
+        //Player
         player = new Player(instance);
         playerNode = new Node("PlayerNode");
-        playerNode.attachChild(player.getGeom());
+        playerNode.attachChild(player.getSpatial());
         
         //Camera
         flyCam.setEnabled(false);
@@ -120,14 +104,15 @@ public class Game extends SimpleApplication {
         camNode.setControlDir(ControlDirection.SpatialToCamera);
         camNode.setLocalTranslation(player.getPos().add(new Vector3f(-14,14,-14)));
         camNode.lookAt(player.getPos(), Vector3f.UNIT_Y);
-        playerNode.attachChild(camNode);
-                
+        playerNode.attachChild(camNode);        
         rootNode.attachChild(playerNode);
         
+        //Mobs
         mobs = new Node("Mobs");
         rootNode.attachChild(mobs);
         createZombies(20, 30);
         
+        //Collectables
         createTestWeaps();
                
 //        Mesh lineMesh = new Mesh();
@@ -143,6 +128,7 @@ public class Game extends SimpleApplication {
 //        line.setMaterial(matL);
 //        rootNode.attachChild(line);
         
+        //HUD
         guiNode.detachAllChildren();
         guiFont = assetManager.loadFont("Interface/Fonts/Default.fnt");
         healthText = new BitmapText(guiFont, false);
@@ -246,7 +232,9 @@ public class Game extends SimpleApplication {
             }            
             if (name.equals("Mouse Up") || name.equals("Mouse Down") || name.equals("Mouse Right") || name.equals("Mouse Left")) {
                 cursorPos = inputManager.getCursorPosition();
-                float angle = (float)(Math.PI + Math.PI/4 + Math.atan2((cursorPos.y - settings.getHeight()/2),(cursorPos.x - settings.getWidth()/2)));
+                //float angle = (float)(Math.PI + Math.PI/4 + Math.atan2((cursorPos.y - settings.getHeight()/2),(cursorPos.x - settings.getWidth()/2)));
+                //Correction for model rotation, above is normal
+                float angle = (float)(Math.PI + (3 * Math.PI)/4 + Math.atan2((cursorPos.y - settings.getHeight()/2),(cursorPos.x - settings.getWidth()/2)));
                 player.setRot((new Quaternion()).fromAngles(0, angle, 0));
             }
         }

@@ -51,11 +51,11 @@ public class Weapon extends Collectable {
         
         //TODO: Add model based on modelNum
         Box b = new Box(Vector3f.ZERO, 0.5f, 0.25f, 0.5f);
-        geom = new Geometry("Weapon", b);
+        spatial = new Geometry("Weapon", b);
         Material mat = new Material(game.getAssetManager(), "Common/MatDefs/Misc/Unshaded.j3md");
         mat.setColor("Color", ColorRGBA.Pink);
-        geom.setMaterial(mat);
-        game.getRootNode().attachChild(geom);
+        spatial.setMaterial(mat);
+        game.getRootNode().attachChild(spatial);
         
         //TODO: Add corresponding animation to modelNum
         

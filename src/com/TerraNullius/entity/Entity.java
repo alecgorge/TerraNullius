@@ -5,15 +5,13 @@
 package com.TerraNullius.entity;
 
 import com.TerraNullius.Game;
-import com.jme3.app.Application;
-import com.jme3.collision.CollisionResult;
 import com.jme3.collision.CollisionResults;
 import com.jme3.material.Material;
 import com.jme3.math.ColorRGBA;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Geometry;
-import com.jme3.scene.shape.Box;
+import com.jme3.scene.Spatial;
 import java.util.ArrayList;
 
 /**
@@ -26,7 +24,8 @@ public class Entity {
     
     Game game;
    
-    Geometry geom;
+    Spatial spatial;
+    Material mat;
     Vector3f pos = Vector3f.ZERO;
     Quaternion rot = new Quaternion();
     
@@ -38,17 +37,17 @@ public class Entity {
     long hurtTimer = 0;
     
     public void update() {
-        geom.setLocalTranslation(pos);
-        geom.setLocalRotation(rot);
+        spatial.setLocalTranslation(pos);
+        spatial.setLocalRotation(rot);
     }
     
     public int getCurrentHealth(){
         return health - damage;
     }
     
-    public void setGeom(Geometry geom){this.geom = geom;}
+    public void setSpatial(Geometry geom){this.spatial = geom;}
     
-    public Geometry getGeom(){return this.geom;}
+    public Spatial getSpatial(){return this.spatial;}
     
 //    public void setTargetPos(Vector3f pos) {this.targetPos = pos;}
     
@@ -57,22 +56,10 @@ public class Entity {
     public void move(float x, float y, float z) {this.pos.add(new Vector3f(x, y, z));}
 
     public void setPos(Vector3f pos) {this.pos = pos;}
-
-    public void setX(float x) {this.pos.x = x;}
-
-    public void setY(float y) {this.pos.y = y;}
-
-    public void setZ(float z) {this.pos.z = z;}
     
     public Vector3f getPos() {return this.pos;}
     
-    public Vector3f getWorldPos() {return this.geom.getWorldTranslation();}
-    
-    public float getX() {return this.pos.x;}
-
-    public float getY() {return this.pos.y;}
-
-    public float getZ() {return this.pos.z;}
+    public Vector3f getWorldPos() {return this.spatial.getWorldTranslation();}
     
     public void setRot(Quaternion rot) {this.rot = rot;}
     
@@ -86,7 +73,7 @@ public class Entity {
         ArrayList<Entity> collidingWith = new ArrayList();
         for(Mob m : game.mobList){
             CollisionResults results = new CollisionResults();
-            this.geom.collideWith(m.geom.getWorldBound(), results);
+            this.spatial.collideWith(m.spatial.getWorldBound(), results);
             if(results.size() > 0){
                 m.push(this);
                 collidingWith.add(m);
@@ -98,7 +85,7 @@ public class Entity {
     public void hurt(Entity e){
         damage += e.strength;
         push(e);
-        geom.getMaterial().setColor("Color", ColorRGBA.Red);
+        mat.setColor("Color", ColorRGBA.Red);
         
         if(damage >= health) die();
     }
@@ -106,7 +93,7 @@ public class Entity {
     public void hurt(Mob m){
         damage += (m.strength * m.weap.fireDamage);
         push(m);
-        geom.getMaterial().setColor("Color", ColorRGBA.Red);
+        mat.setColor("Color", ColorRGBA.Red);
         
         if(damage >= health) die();
     }
@@ -116,7 +103,7 @@ public class Entity {
     }
 
     public void die(){
-        game.getRootNode().detachChild(geom);
+        game.getRootNode().detachChild(spatial);
         dead = true;
     }
     

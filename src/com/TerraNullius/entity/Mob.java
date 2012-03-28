@@ -49,7 +49,7 @@ public class Mob extends Entity{
     
     @Override
     public void die(){
-        game.mobs.detachChild(geom);
+        game.mobs.detachChild(spatial);
         game.mobList.remove(this);
         game.bulletAppState.getPhysicsSpace().remove(physChar);
     }
@@ -63,13 +63,13 @@ public class Mob extends Entity{
 
         Ray ray = new Ray(thisPos, rayCoords);
 
-        e.geom.collideWith(ray, results);
+        e.spatial.collideWith(ray, results);
 
         if (results.size() > 0) {
             CollisionResult col = results.getCollision(0);
             Geometry tempGeom = col.getGeometry();
             if(col.getDistance() <= weap.range){
-                System.out.println(this.geom.getName() + "  hit " + tempGeom.getName() + " at " + col.getContactPoint() + ", " + col.getDistance() + " wu away.");
+                System.out.println(this.spatial.getName() + "  hit " + tempGeom.getName() + " at " + col.getContactPoint() + ", " + col.getDistance() + " wu away.");
                 e.hurt(this);
             }
         }

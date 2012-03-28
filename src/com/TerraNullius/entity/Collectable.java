@@ -16,14 +16,14 @@ public class Collectable extends Entity{
     @Override
     public void update(){
         if(!isDead()){
-            if(!pos.equals(geom.getLocalTranslation())){
-                geom.setLocalTranslation(pos);
+            if(!pos.equals(spatial.getLocalTranslation())){
+                spatial.setLocalTranslation(pos);
             }
-            if(!rot.equals(geom.getLocalRotation())){
-                geom.setLocalRotation(rot);
+            if(!rot.equals(spatial.getLocalRotation())){
+                spatial.setLocalRotation(rot);
             }
             CollisionResults results = new CollisionResults();
-            geom.collideWith(game.player.geom.getWorldBound(), results);
+            spatial.collideWith(game.player.spatial.getWorldBound(), results);
             if(results.size() > 0){
                 game.player.give(this);
                 die();

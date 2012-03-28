@@ -25,7 +25,7 @@ public class Bullet extends Entity {
         Sphere bullet = new Sphere(32, 32, 0.1f, true, false);
         bullet.setTextureMode(TextureMode.Projected);
         Geometry bulletg = new Geometry("bullet", bullet);
-        Material mat = new Material(game.getAssetManager(), "Common/MatDefs/Misc/Unshaded.j3md");
+        mat = new Material(game.getAssetManager(), "Common/MatDefs/Misc/Unshaded.j3md");
         mat.setColor("Color", ColorRGBA.White);
         bulletg.setMaterial(mat);
         bulletg.setShadowMode(ShadowMode.CastAndReceive);

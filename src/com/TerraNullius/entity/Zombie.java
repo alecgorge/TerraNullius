@@ -33,17 +33,17 @@ public class Zombie extends Mob {
         turnSpeed = 0.9f;
         
         Box b = new Box(Vector3f.ZERO, 0.5f, 1f, 0.5f);
-        geom = new Geometry("Zombie", b);
-        Material mat = new Material(game.getAssetManager(), "Common/MatDefs/Misc/Unshaded.j3md");
+        spatial = new Geometry("Zombie", b);
+        mat = new Material(game.getAssetManager(), "Common/MatDefs/Misc/Unshaded.j3md");
         mat.setColor("Color", ColorRGBA.Black);
-        geom.setMaterial(mat);
-        game.mobs.attachChild(geom);
+        spatial.setMaterial(mat);
+        game.mobs.attachChild(spatial);
         
         physChar = new CharacterControl(new CapsuleCollisionShape(.5f, 1f, 1), 0.01f);
-        geom.addControl(physChar);
+        spatial.addControl(physChar);
         game.bulletAppState.getPhysicsSpace().add(physChar);
         
-        geom.lookAt(game.player.getWorldPos(), Vector3f.UNIT_Y);
+        spatial.lookAt(game.player.getWorldPos(), Vector3f.UNIT_Y);
 
         update();
     }
@@ -63,14 +63,14 @@ public class Zombie extends Mob {
                 //e.hurt(this);
                 hurtTimer = System.currentTimeMillis();
             }
-            Quaternion old = new Quaternion(geom.getLocalRotation());
-            geom.lookAt(target, Vector3f.UNIT_Y);
-            geom.getLocalRotation().slerp(old, turnSpeed); // the higher the value, the slower rotation
+            Quaternion old = new Quaternion(spatial.getLocalRotation());
+            spatial.lookAt(target, Vector3f.UNIT_Y);
+            spatial.getLocalRotation().slerp(old, turnSpeed); // the higher the value, the slower rotation
 
             //geom.setLocalTranslation(pos);
             physChar.setWalkDirection(target.subtract(pos).normalize().mult(speed));
 
-            rot = geom.getLocalRotation();
+            rot = spatial.getLocalRotation();
 
             //mat.setColor("Color", ColorRGBA.Black);
         }

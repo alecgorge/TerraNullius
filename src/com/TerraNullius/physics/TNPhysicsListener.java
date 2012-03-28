@@ -21,15 +21,18 @@ public class TNPhysicsListener implements PhysicsCollisionListener {
 
     @Override
     public void collision(PhysicsCollisionEvent event) {
-      if((event.getNodeA()!=null)&&(event.getNodeB()!=null)) {
-          String a = event.getNodeA().getName();
-          String b = event.getNodeB().getName();
+        if((event.getNodeA()!=null)&&(event.getNodeB()!=null)) {
+        String a = event.getNodeA().getName();
+        String b = event.getNodeB().getName();
 
-          if (a.equals("brick"))  {
-            System.out.println("Collision with a brick!!!");
-          } else if (b.equals("brick")) {
-            System.out.println("Collision with a brick!!!");
-          }
-      }
+            if (a.equals("Zombie") && b.equals("Zombie"))  {
+                //Push apart
+                System.out.println("Zombies hit each other.");
+            }else if ((a.equals("Player") && b.equals("Zombie")) || (b.equals("Player") && a.equals("Zombie")))  {
+                //Knock player back
+                System.out.println("Zombie hit the player.");
+            }
+          
+        }
     }
 }
