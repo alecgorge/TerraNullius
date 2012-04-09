@@ -32,14 +32,26 @@ public class Zombie extends Mob {
         speed = 0.009f;
         turnSpeed = 0.9f;
         
-        Box b = new Box(Vector3f.ZERO, 0.5f, 1f, 0.5f);
-        spatial = new Geometry("Zombie", b);
+//        Box b = new Box(Vector3f.ZERO, 0.5f, 1f, 0.5f);
+//        spatial = new Geometry("Zombie", b);
+//        mat = new Material(game.getAssetManager(), "Common/MatDefs/Misc/Unshaded.j3md");
+//        mat.setColor("Color", ColorRGBA.Black);
+//        spatial.setMaterial(mat);
+//        game.mobs.attachChild(spatial);
+        
+        spatial = game.getAssetManager().loadModel("Models/Human/meHumanMale.mesh.xml");
+        spatial.setName("Zombie");
         mat = new Material(game.getAssetManager(), "Common/MatDefs/Misc/Unshaded.j3md");
         mat.setColor("Color", ColorRGBA.Black);
         spatial.setMaterial(mat);
+        spatial.scale(1.5f, 1.5f, 1.5f);
         game.mobs.attachChild(spatial);
         
-        physChar = new CharacterControl(new CapsuleCollisionShape(.5f, 1f, 1), 0.01f);
+        physChar = new CharacterControl(new CapsuleCollisionShape(.25f, 1f, 1), 0.1f);
+        physChar.setJumpSpeed(20);
+        physChar.setFallSpeed(10);
+        physChar.setGravity(30);
+        physChar.setUseViewDirection(true);
         spatial.addControl(physChar);
         game.bulletAppState.getPhysicsSpace().add(physChar);
         

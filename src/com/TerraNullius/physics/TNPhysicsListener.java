@@ -31,6 +31,9 @@ public class TNPhysicsListener implements PhysicsCollisionListener {
             }else if ((a.equals("Player") && b.equals("Zombie")) || (b.equals("Player") && a.equals("Zombie")))  {
                 //Knock player back
                 System.out.println("Zombie hit the player.");
+            }else if((a.equals("Bullet") && b.equals("Zombie")) || (b.equals("Bullet") && a.equals("Zombie"))){
+                //Deal dmg to zombie
+                System.out.println("Bullet hit a zombie.");
             }
           
         }

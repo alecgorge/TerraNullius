@@ -22,7 +22,7 @@ public class Mob extends Entity{
     
     CharacterControl physChar;
     WeaponType weap;
-    boolean isFireing;
+    boolean isFiring;
     float speed = 1f;
     float turnSpeed = 1f; //Higher is slower (turn interpolation time)
     
@@ -32,19 +32,25 @@ public class Mob extends Entity{
     
     public float getTurnSpeed(){return turnSpeed;}
     
-    public void fireOn(){isFireing = true;}
+    public void fireOn(){isFiring = true;}
     
-    public void fireOff(){isFireing = false;}
+    public void fireOff(){isFiring = false;}
     
-    public boolean isFireing(){return isFireing;}
+    public boolean isFiring(){return isFiring;}
     
     public void setWeap(WeaponType weap){this.weap = weap;}
     
     public WeaponType getWeap(){return this.weap;}
     
+    @Override
     public void setPos(Vector3f pos){
         this.pos = pos;
         physChar.warp(pos);
+    }
+    
+    @Override
+    public Vector3f getPos(){
+        return physChar.getPhysicsLocation();
     }
     
     @Override
