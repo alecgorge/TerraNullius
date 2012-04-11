@@ -48,9 +48,9 @@ public class Player extends Mob {
         spatial.scale(1.5f, 1.5f, 1.5f);
         spatial.setLocalTranslation(pos);
 
-        physChar = new CharacterControl(new CapsuleCollisionShape(.25f, 1f, 1), 0.1f);
+        physChar = new CharacterControl(new CapsuleCollisionShape(.2f, 0.75f, 1), 0.1f);
         physChar.setJumpSpeed(20);
-        physChar.setFallSpeed(10);
+        physChar.setFallSpeed(20);
         physChar.setGravity(30);
         physChar.setUseViewDirection(true);
         spatial.addControl(physChar);
@@ -62,15 +62,17 @@ public class Player extends Mob {
     @Override
     public void update() {
         if (!isDead()) {
-
             physChar.setWalkDirection(walkDirection);
-            //pos = spatial.getWorldTranslation();
-            pos = physChar.getPhysicsLocation();
-            //Correct for the model being rotated incorrectly
-            
             physChar.setViewDirection(viewDirection);
+            
             //checkCollisions(pos);
+            
+            pos = physChar.getPhysicsLocation();
         }
+    }
+    
+    public void jump(){
+        physChar.jump();
     }
     
     public void setViewDirection(Vector3f vec){
@@ -78,8 +80,6 @@ public class Player extends Mob {
     }
 
     public void addWalkDirection(float x, float y, float z) {
-        //this.pos.add(new Vector3f(x, y, z));
-        //game.playerNode.move(x, y, z);
         walkDirection.addLocal(x, y, z);
     }
     

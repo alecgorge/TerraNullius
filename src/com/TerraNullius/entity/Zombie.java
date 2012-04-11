@@ -47,9 +47,9 @@ public class Zombie extends Mob {
         spatial.scale(1.5f, 1.5f, 1.5f);
         game.mobs.attachChild(spatial);
         
-        physChar = new CharacterControl(new CapsuleCollisionShape(.25f, 1f, 1), 0.1f);
+        physChar = new CharacterControl(new CapsuleCollisionShape(.2f, 0.75f, 1), 0.1f);
         physChar.setJumpSpeed(20);
-        physChar.setFallSpeed(10);
+        physChar.setFallSpeed(20);
         physChar.setGravity(30);
         physChar.setUseViewDirection(true);
         spatial.addControl(physChar);
@@ -65,9 +65,7 @@ public class Zombie extends Mob {
         if(!isDead()){
             Vector3f target = game.player.getPos();
 
-//            pos = pos.add((target.subtract(pos)).normalize().mult(speed*tpf));
             pos = physChar.getPhysicsLocation();
-            //System.out.println(pos);
 
 
             if((System.currentTimeMillis() - hurtTimer > weap.fireRate * 1000) && pos.distance(game.player.pos) <= weap.range){
@@ -75,16 +73,17 @@ public class Zombie extends Mob {
                 //e.hurt(this);
                 hurtTimer = System.currentTimeMillis();
             }
-            Quaternion old = new Quaternion(spatial.getLocalRotation());
-            spatial.lookAt(target, Vector3f.UNIT_Y);
-            spatial.getLocalRotation().slerp(old, turnSpeed); // the higher the value, the slower rotation
+            
+//            Quaternion old = new Quaternion(spatial.getLocalRotation());
+//            spatial.lookAt(target, Vector3f.UNIT_Y);
+//            spatial.getLocalRotation().slerp(old, turnSpeed); // the higher the value, the slower rotation
+            
+            Vector3f tempView = target.subtract(pos).normalize();
+            physChar.setViewDirection(new Vector3f(tempView.getX(), 0f, tempView.getZ()));
 
-            //geom.setLocalTranslation(pos);
             physChar.setWalkDirection(target.subtract(pos).normalize().mult(speed));
 
             rot = spatial.getLocalRotation();
-
-            //mat.setColor("Color", ColorRGBA.Black);
         }
     }
 }

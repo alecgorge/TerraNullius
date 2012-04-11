@@ -104,11 +104,8 @@ public class Game extends SimpleApplication {
 
         assetManager.registerLocator("town.zip", ZipLocator.class.getName());
         Spatial sceneModel = assetManager.loadModel("main.scene");
-        sceneModel.setLocalTranslation(0, -5f, 0);
+        sceneModel.setLocalTranslation(0, -1f, 0);
         sceneModel.setLocalScale(1f);
-
-        // We set up collision detection for the scene by creating a
-        // compound collision shape and a static RigidBodyControl with mass zero.
         CollisionShape sceneShape = CollisionShapeFactory.createMeshShape((Node) sceneModel);
         RigidBodyControl landscape = new RigidBodyControl(sceneShape, 0);
         sceneModel.addControl(landscape);
@@ -211,6 +208,7 @@ public class Game extends SimpleApplication {
         inputManager.addMapping("Right", new KeyTrigger(KeyInput.KEY_D));
         inputManager.addMapping("Up", new KeyTrigger(KeyInput.KEY_W));
         inputManager.addMapping("Down", new KeyTrigger(KeyInput.KEY_S));
+        inputManager.addMapping("Jump", new KeyTrigger(KeyInput.KEY_SPACE));
         inputManager.addMapping("Mouse Up", new MouseAxisTrigger(MouseInput.AXIS_Y, true));
         inputManager.addMapping("Mouse Down", new MouseAxisTrigger(MouseInput.AXIS_Y, false));
         inputManager.addMapping("Mouse Right", new MouseAxisTrigger(MouseInput.AXIS_X, true));
@@ -219,9 +217,9 @@ public class Game extends SimpleApplication {
 
 
         inputManager.addListener(analogListener, new String[]{"Mouse Up", "Mouse Down", "Mouse Right", "Mouse Left"});
-        inputManager.addListener(actionListener, new String[]{"Left", "Right", "Up", "Down", "Mouse Up", "Left Click"});
+        inputManager.addListener(actionListener, new String[]{"Left", "Right", "Up", "Down", "Mouse Up", "Jump", "Left Click"});
     }
-    private boolean left = false, right = false, up = false, down = false, fire = false;
+    private boolean left = false, right = false, up = false, down = false, fire = false, jump = false;
     private ActionListener actionListener = new ActionListener() {
         public void onAction(String name, boolean isPressed, float tpf) {
             if (name.equals("Left")) {
@@ -248,7 +246,13 @@ public class Game extends SimpleApplication {
                 } else {
                     down = false;
                 }
-            } else if (name.equals("Left Click")) {
+            }else if (name.equals("Jump")) {
+                if (isPressed) {
+                    jump = true;
+                } else {
+                    jump = false;
+                }
+             }else if (name.equals("Left Click")) {
                 if (isPressed) {
                     fire = true;
                 } else {
@@ -282,10 +286,13 @@ public class Game extends SimpleApplication {
         if (down)walkDirection.addLocal(-player.getSpeed(), 0, -player.getSpeed());
         
         player.setWalkDirection(walkDirection);
-        
-        if(fire && !player.isFiring()){
+        if (jump) {
+            player.jump();
+        }
+
+        if (fire && !player.isFiring()) {
             player.fireOn();
-        }else if(!fire && player.isFiring()){
+        } else if (!fire && player.isFiring()) {
             player.fireOff();
         }
         
