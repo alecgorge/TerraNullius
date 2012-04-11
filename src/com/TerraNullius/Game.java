@@ -47,6 +47,7 @@ public class Game extends SimpleApplication {
     //HUD
     public BitmapText healthText;
     public BitmapText weapText;
+    public Nifty nifty;
 
     public static void main(String[] args) {
         Game app = new Game();
@@ -150,21 +151,21 @@ public class Game extends SimpleApplication {
 //        rootNode.attachChild(line);
 
         //HUD
-        guiNode.detachAllChildren();
-        guiFont = assetManager.loadFont("Interface/Fonts/Default.fnt");
-        healthText = new BitmapText(guiFont, false);
-        healthText.setSize(guiFont.getCharSet().getRenderedSize());
-        healthText.setText("Health: " + player.getCurrentHealth());
-        healthText.setLocalTranslation(300, healthText.getLineHeight(), 0);
-        guiNode.attachChild(healthText);
-        weapText = new BitmapText(guiFont, false);
-        weapText.setSize(guiFont.getCharSet().getRenderedSize());
-        weapText.setText("Weap: " + player.getWeap().toString());
-        weapText.setLocalTranslation(100, weapText.getLineHeight(), 0);
-        guiNode.attachChild(weapText);
+//        guiNode.detachAllChildren();
+//        guiFont = assetManager.loadFont("Interface/Fonts/Default.fnt");
+//        healthText = new BitmapText(guiFont, false);
+//        healthText.setSize(guiFont.getCharSet().getRenderedSize());
+//        healthText.setText("Health: " + player.getCurrentHealth());
+//        healthText.setLocalTranslation(300, healthText.getLineHeight(), 0);
+//        guiNode.attachChild(healthText);
+//        weapText = new BitmapText(guiFont, false);
+//        weapText.setSize(guiFont.getCharSet().getRenderedSize());
+//        weapText.setText("Weap: " + player.getWeap().toString());
+//        weapText.setLocalTranslation(100, weapText.getLineHeight(), 0);
+//        guiNode.attachChild(weapText);
         
         NiftyJmeDisplay niftyDisplay = new NiftyJmeDisplay(getAssetManager(),getInputManager(),getAudioRenderer(),getGuiViewPort());
-        Nifty nifty = niftyDisplay.getNifty();
+        nifty = niftyDisplay.getNifty();
         nifty.fromXml("Interface/GUI.xml", "StartScreen", new StartScreen());
         getGuiViewPort().addProcessor(niftyDisplay);
 
@@ -204,6 +205,7 @@ public class Game extends SimpleApplication {
     }
 
     private void initKeys() {
+        //Movement Controls
         inputManager.addMapping("Left", new KeyTrigger(KeyInput.KEY_A));
         inputManager.addMapping("Right", new KeyTrigger(KeyInput.KEY_D));
         inputManager.addMapping("Up", new KeyTrigger(KeyInput.KEY_W));
@@ -214,12 +216,15 @@ public class Game extends SimpleApplication {
         inputManager.addMapping("Mouse Right", new MouseAxisTrigger(MouseInput.AXIS_X, true));
         inputManager.addMapping("Mouse Left", new MouseAxisTrigger(MouseInput.AXIS_X, false));
         inputManager.addMapping("Left Click", new MouseButtonTrigger(MouseInput.BUTTON_LEFT));
+        //HUD controls
+        inputManager.addMapping("Inv", new KeyTrigger(KeyInput.KEY_I));
+        inputManager.addMapping("Menu", new KeyTrigger(KeyInput.KEY_M));
 
 
         inputManager.addListener(analogListener, new String[]{"Mouse Up", "Mouse Down", "Mouse Right", "Mouse Left"});
-        inputManager.addListener(actionListener, new String[]{"Left", "Right", "Up", "Down", "Mouse Up", "Jump", "Left Click"});
+        inputManager.addListener(actionListener, new String[]{"Left", "Right", "Up", "Down", "Mouse Up", "Jump", "Left Click", "Inv", "Menu"});
     }
-    private boolean left = false, right = false, up = false, down = false, fire = false, jump = false;
+    private boolean left = false, right = false, up = false, down = false, fire = false, jump = false, inv = false, menu = false;
     private ActionListener actionListener = new ActionListener() {
         public void onAction(String name, boolean isPressed, float tpf) {
             if (name.equals("Left")) {
@@ -258,6 +263,14 @@ public class Game extends SimpleApplication {
                 } else {
                     fire = false;
                 }
+            }else if (name.equals("Inv")) {
+                if (isPressed) {
+                    inv = true;
+                }
+            }else if (name.equals("Menu")) {
+                if (isPressed) {
+                    menu = true;
+                }
             }
         }
     };
@@ -279,6 +292,23 @@ public class Game extends SimpleApplication {
 
     @Override
     public void simpleUpdate(float tpf) {
+        if(menu){
+            menu = false;
+            if(nifty.getCurrentScreen() == nifty.getScreen("MenuScreen")){
+                nifty.gotoScreen("HUDScreen");
+            }else{
+                nifty.gotoScreen("MenuScreen"); 
+            }
+        }
+        if(inv){
+            inv = false;
+            if(nifty.getCurrentScreen() == nifty.getScreen("InventoryScreen")){
+                nifty.gotoScreen("HUDScreen");
+            }else{
+                nifty.gotoScreen("InventoryScreen"); 
+            }
+        }
+        
         Vector3f walkDirection = new Vector3f();
         if (left)walkDirection.addLocal(player.getSpeed(), 0, -player.getSpeed());
         if (right)walkDirection.addLocal(-player.getSpeed(), 0, player.getSpeed());
@@ -308,8 +338,8 @@ public class Game extends SimpleApplication {
             player.shoot();
             shootTimer = System.currentTimeMillis();
         }
-        healthText.setText("Health: " + player.getCurrentHealth());
-        weapText.setText("Weap: " + player.getWeap().toString());
+//        healthText.setText("Health: " + player.getCurrentHealth());
+//        weapText.setText("Weap: " + player.getWeap().toString());
     }
 
     @Override

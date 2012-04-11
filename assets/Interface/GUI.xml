@@ -35,6 +35,38 @@
             </panel>
         </layer>
     </screen>
+    <screen id="MenuScreen" controller="com.TerraNullius.GUI.MenuScreen">
+        <layer id="background" backgroundColor="#000f">
+      <!-- ... -->
+        </layer>
+        <layer id="foreground" backgroundColor="#0000" childLayout="vertical">
+            <panel id="panel_top" height="40%" width="100%" align="center" childLayout="center" backgroundColor="#f008">
+                <text text="Terra Nullius" size="64" font="Interface/Fonts/Default.fnt" width="100%" height="100%" />
+            </panel>
+            <panel id="panel_bottom" height="60%" width="100%" align="center" childLayout="vertical" backgroundColor="#00f8">  
+                <panel id="button_top" height="25%" width="40%" align="center" valign="top" childLayout="center" backgroundColor="#44f8">
+                    <control name="button" label="Resume" id="StartButton" align="center" valign="center" visibleToMouse="true" >
+                        <interact onClick="startGame(HUDScreen)"/>
+                    </control>
+                </panel>
+                <panel id="button_center_top" height="25%" width="40%" align="center" valign="center" childLayout="center" backgroundColor="#44f8">
+                    <control name="button" label="Challenge" id="ChallengeButton" align="center" valign="center" visibleToMouse="true" >
+                        <interact onClick="startGame(HUDScreen)"/>
+                    </control>
+                </panel>
+                <panel id="button_center_bot" height="25%" width="40%" align="center" valign="center" childLayout="center" backgroundColor="#44f8">
+                    <control name="button" label="Options" id="OptionsButton" align="center" valign="center" visibleToMouse="true" >
+                        <interact onClick="startGame(HUDScreen)"/>
+                    </control>
+                </panel>
+                <panel id="button_bottom" height="25%" width="40%" align="center" valign="bottom" childLayout="center" backgroundColor="#44f8">
+                    <control name="button" label="Exit" id="ExitButton" align="center" valign="center" visibleToMouse="true" >
+                        <interact onClick="quitGame()"/>
+                    </control> 
+                </panel>
+            </panel>
+        </layer>
+    </screen>
     <screen id="HUDScreen" controller="com.TerraNullius.GUI.HUDScreen">
         
     </screen>
