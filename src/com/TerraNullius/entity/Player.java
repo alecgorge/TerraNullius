@@ -24,8 +24,7 @@ import com.jme3.scene.Spatial;
  * @author Griffin
  */
 public class Player extends Mob {
-    Vector3f walkDirection = new Vector3f(0,0,0);
-    Vector3f viewDirection = new Vector3f(0,0,0);
+
     public Player(Game game) {
         this.game = game;
 
@@ -47,9 +46,10 @@ public class Player extends Mob {
         spatial.setMaterial(mat);
         spatial.scale(1.5f, 1.5f, 1.5f);
         spatial.setLocalTranslation(pos);
+        game.idMap.add(spatial, this);
 
         physChar = new CharacterControl(new CapsuleCollisionShape(.2f, 0.75f, 1), 0.1f);
-        physChar.setJumpSpeed(20);
+        physChar.setJumpSpeed(10);
         physChar.setFallSpeed(20);
         physChar.setGravity(30);
         physChar.setUseViewDirection(true);
@@ -62,38 +62,12 @@ public class Player extends Mob {
     @Override
     public void update() {
         if (!isDead()) {
-            physChar.setWalkDirection(walkDirection);
+            physChar.setWalkDirection(walkDirection.normalize().mult(speed));
             physChar.setViewDirection(viewDirection);
             
             //checkCollisions(pos);
             
             pos = physChar.getPhysicsLocation();
-        }
-    }
-    
-    public void jump(){
-        physChar.jump();
-    }
-    
-    public void setViewDirection(Vector3f vec){
-        viewDirection.set(vec);
-    }
-
-    public void addWalkDirection(float x, float y, float z) {
-        walkDirection.addLocal(x, y, z);
-    }
-    
-    public void setWalkDirection(float x, float y, float z){
-        walkDirection.set(x, y, z);
-    }
-    
-    public void setWalkDirection(Vector3f vec){
-        walkDirection.set(vec);
-    }
-
-    public void give(Entity e) {
-        if (e instanceof Weapon) {
-            weap = ((Weapon) e).weapType;
         }
     }
 
@@ -144,12 +118,8 @@ public class Player extends Mob {
             Spatial tempGeom = col.getGeometry();
             if (col.getDistance() <= weap.range) {
                 System.out.println("  You shot " + tempGeom.getName() + " at " + col.getContactPoint() + ", " + col.getDistance() + " wu away.");
-                for (Mob m : game.mobList) {
-                    if (m.getSpatial() == tempGeom) {
-                        m.hurt(this);
-                        break;
-                    }
-                }
+                Entity e = game.idMap.getEntity(tempGeom);
+                if(e != null) e.hurt(this);
             }
         }
     }

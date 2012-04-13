@@ -27,7 +27,9 @@ public class HUDScreen extends AbstractAppState implements ScreenController {
     this.screen = screen;
   }
  
-  public void onStartScreen() { }
+  public void onStartScreen() {
+      
+  }
  
   public void onEndScreen() { }
  

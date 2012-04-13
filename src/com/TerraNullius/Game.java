@@ -33,12 +33,14 @@ public class Game extends SimpleApplication {
 
     static Game instance;
     public static AppSettings settings;
+    public EntityIDMapper idMap;
     public BulletAppState bulletAppState;
     public Vector2f cursorPos;
     public long shootTimer;
     public CameraNode camNode;
     public Node playerNode;
     public Node mobs;
+    boolean isRunning = false;
     //Entities
     public Player player;
     public ArrayList<Mob> mobList = new ArrayList();
@@ -67,6 +69,7 @@ public class Game extends SimpleApplication {
     @Override
     public void simpleInitApp() {
         Logger.getLogger("").setLevel(Level.SEVERE);
+        idMap = new EntityIDMapper();
 
         //Physics
         bulletAppState = new BulletAppState();
@@ -76,7 +79,6 @@ public class Game extends SimpleApplication {
         TNPhysicsListener pListener = new TNPhysicsListener(bulletAppState);
 
         //Light
-        // We add light so we see the scene
         AmbientLight al = new AmbientLight();
         al.setColor(ColorRGBA.White.mult(1.3f));
         rootNode.addLight(al);
@@ -85,6 +87,7 @@ public class Game extends SimpleApplication {
         dl.setColor(ColorRGBA.White);
         dl.setDirection(new Vector3f(2.8f, -2.8f, -2.8f).normalizeLocal());
         rootNode.addLight(dl);
+        
 //        //Ground
 //        Box b = new Box(Vector3f.ZERO, 128f, 1f, 128f);
 //        b.scaleTextureCoordinates(new Vector2f(64f, 64f));
@@ -224,7 +227,8 @@ public class Game extends SimpleApplication {
         inputManager.addListener(analogListener, new String[]{"Mouse Up", "Mouse Down", "Mouse Right", "Mouse Left"});
         inputManager.addListener(actionListener, new String[]{"Left", "Right", "Up", "Down", "Mouse Up", "Jump", "Left Click", "Inv", "Menu"});
     }
-    private boolean left = false, right = false, up = false, down = false, fire = false, jump = false, inv = false, menu = false;
+    private boolean left = false, right = false, up = false, down = false,
+                    fire = false, jump = false, invToggle = false, menuToggle = false;
     private ActionListener actionListener = new ActionListener() {
         public void onAction(String name, boolean isPressed, float tpf) {
             if (name.equals("Left")) {
@@ -265,24 +269,23 @@ public class Game extends SimpleApplication {
                 }
             }else if (name.equals("Inv")) {
                 if (isPressed) {
-                    inv = true;
+                    invToggle = true;
                 }
             }else if (name.equals("Menu")) {
                 if (isPressed) {
-                    menu = true;
+                    menuToggle = true;                  
                 }
             }
         }
     };
     
-    float angle;
     private AnalogListener analogListener = new AnalogListener() {
         public void onAnalog(String name, float value, float tpf) {
             if (name.equals("Mouse Up") || name.equals("Mouse Down") || name.equals("Mouse Right") || name.equals("Mouse Left")) {
                 cursorPos = inputManager.getCursorPosition();
                 //float angle = (float)(Math.PI + Math.PI/4 + Math.atan2((cursorPos.y - settings.getHeight()/2),(cursorPos.x - settings.getWidth()/2)));
                 //Correction for model rotation, above is normal
-                angle = (float) (Math.PI + (3 * Math.PI) / 4 + Math.atan2((cursorPos.y - settings.getHeight() / 2), (cursorPos.x - settings.getWidth() / 2)));
+                float angle = (float) (Math.PI + (3 * Math.PI) / 4 + Math.atan2((cursorPos.y - settings.getHeight() / 2), (cursorPos.x - settings.getWidth() / 2)));
                 player.setRot((new Quaternion()).fromAngles(0, angle, 0));
                 //BUG: this method breaks for some quadrants
                 player.setViewDirection(new Vector3f().set((float)(1/Math.cos(angle)), 0f, (float)(1/Math.sin(angle))));
@@ -292,54 +295,69 @@ public class Game extends SimpleApplication {
 
     @Override
     public void simpleUpdate(float tpf) {
-        if(menu){
-            menu = false;
-            if(nifty.getCurrentScreen() == nifty.getScreen("MenuScreen")){
+        if (menuToggle) {
+            menuToggle = false;
+            if (nifty.getCurrentScreen() == nifty.getScreen("MenuScreen")) {
                 nifty.gotoScreen("HUDScreen");
-            }else{
-                nifty.gotoScreen("MenuScreen"); 
+            } else {
+                nifty.gotoScreen("MenuScreen");
             }
         }
-        if(inv){
-            inv = false;
-            if(nifty.getCurrentScreen() == nifty.getScreen("InventoryScreen")){
+        if (invToggle) {
+            invToggle = false;
+            if (nifty.getCurrentScreen() == nifty.getScreen("InventoryScreen")) {
                 nifty.gotoScreen("HUDScreen");
-            }else{
-                nifty.gotoScreen("InventoryScreen"); 
+            } else {
+                nifty.gotoScreen("InventoryScreen");
             }
+            //        healthText.setText("Health: " + player.getCurrentHealth());
+            //        weapText.setText("Weap: " + player.getWeap().toString());
         }
-        
-        Vector3f walkDirection = new Vector3f();
-        if (left)walkDirection.addLocal(player.getSpeed(), 0, -player.getSpeed());
-        if (right)walkDirection.addLocal(-player.getSpeed(), 0, player.getSpeed());
-        if (up)walkDirection.addLocal(player.getSpeed(), 0, player.getSpeed());
-        if (down)walkDirection.addLocal(-player.getSpeed(), 0, -player.getSpeed());
-        
-        player.setWalkDirection(walkDirection);
-        if (jump) {
-            player.jump();
-        }
+        isRunning = (nifty.getCurrentScreen() == nifty.getScreen("HUDScreen"));
+        if (isRunning) {
+            Vector3f walkDirection = new Vector3f();
+            if (left) {
+                walkDirection.addLocal(player.getSpeed(), 0, -player.getSpeed());
+            }
+            if (right) {
+                walkDirection.addLocal(-player.getSpeed(), 0, player.getSpeed());
+            }
+            if (up) {
+                walkDirection.addLocal(player.getSpeed(), 0, player.getSpeed());
+            }
+            if (down) {
+                walkDirection.addLocal(-player.getSpeed(), 0, -player.getSpeed());
+            }
 
-        if (fire && !player.isFiring()) {
-            player.fireOn();
-        } else if (!fire && player.isFiring()) {
-            player.fireOff();
+            player.setWalkDirection(walkDirection);
+            if (jump) {
+                player.jump();
+            }
+
+            if (fire && !player.isFiring()) {
+                player.fireOn();
+            } else if (!fire && player.isFiring()) {
+                player.fireOff();
+            }
+
+            player.update();
+            camNode.setLocalTranslation(player.getPos().add(new Vector3f(-14, 14, -14)));
+            for (Mob m : mobList) {
+                m.update(tpf);
+            }
+            for (Entity e : entityList) {
+                e.update();
+            }
+            if ((System.currentTimeMillis() - shootTimer > player.getWeap().fireRate * 1000) && player.isFiring()) {
+                player.shoot();
+                shootTimer = System.currentTimeMillis();
+            }
+        } else {
+            player.setWalkDirection(Vector3f.ZERO);
+            for (Mob m : mobList) {
+                m.setWalkDirection(Vector3f.ZERO);
+            }
         }
-        
-        player.update();
-        camNode.setLocalTranslation(player.getPos().add(new Vector3f(-14, 14, -14)));
-        for (Mob m : mobList) {
-            m.update(tpf);
-        }
-        for (Entity e : entityList) {
-            e.update();
-        }
-        if ((System.currentTimeMillis() - shootTimer > player.getWeap().fireRate * 1000) && player.isFiring()) {
-            player.shoot();
-            shootTimer = System.currentTimeMillis();
-        }
-//        healthText.setText("Health: " + player.getCurrentHealth());
-//        weapText.setText("Weap: " + player.getWeap().toString());
     }
 
     @Override

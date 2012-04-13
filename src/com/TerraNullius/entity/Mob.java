@@ -25,6 +25,8 @@ public class Mob extends Entity{
     boolean isFiring;
     float speed = 1f;
     float turnSpeed = 1f; //Higher is slower (turn interpolation time)
+    Vector3f walkDirection = new Vector3f(0,0,0);
+    Vector3f viewDirection = new Vector3f(0,0,0);
     
     public void update(float tpf){}
     
@@ -41,6 +43,35 @@ public class Mob extends Entity{
     public void setWeap(WeaponType weap){this.weap = weap;}
     
     public WeaponType getWeap(){return this.weap;}
+    
+        public void jump(){
+        physChar.jump();
+    }
+    
+    public void setViewDirection(Vector3f vec){
+        viewDirection.set(vec);
+        physChar.setViewDirection(viewDirection);
+    }
+
+    public void addWalkDirection(float x, float y, float z) {
+        walkDirection.addLocal(x, y, z);
+    }
+    
+    public void setWalkDirection(float x, float y, float z){
+        walkDirection.set(x, y, z);
+        physChar.setWalkDirection(walkDirection.normalize().mult(speed));
+    }
+    
+    public void setWalkDirection(Vector3f vec){
+        walkDirection.set(vec);
+        physChar.setWalkDirection(walkDirection.normalize().mult(speed));
+    }
+
+    public void give(Entity e) {
+        if (e instanceof Weapon) {
+            weap = ((Weapon) e).weapType;
+        }
+    }
     
     @Override
     public void setPos(Vector3f pos){

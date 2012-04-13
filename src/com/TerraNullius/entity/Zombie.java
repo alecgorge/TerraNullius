@@ -29,7 +29,7 @@ public class Zombie extends Mob {
         pos = new Vector3f(0, 2, 0);
         rot = new Quaternion();
         
-        speed = 0.009f;
+        speed = 0.075f;
         turnSpeed = 0.9f;
         
 //        Box b = new Box(Vector3f.ZERO, 0.5f, 1f, 0.5f);
@@ -46,6 +46,7 @@ public class Zombie extends Mob {
         spatial.setMaterial(mat);
         spatial.scale(1.5f, 1.5f, 1.5f);
         game.mobs.attachChild(spatial);
+        game.idMap.add(spatial, this);
         
         physChar = new CharacterControl(new CapsuleCollisionShape(.2f, 0.75f, 1), 0.1f);
         physChar.setJumpSpeed(20);
