@@ -10,6 +10,8 @@ import com.jme3.bullet.BulletAppState;
 import com.jme3.bullet.collision.shapes.CollisionShape;
 import com.jme3.bullet.control.RigidBodyControl;
 import com.jme3.bullet.util.CollisionShapeFactory;
+import com.jme3.collision.CollisionResult;
+import com.jme3.collision.CollisionResults;
 import com.jme3.font.BitmapText;
 import com.jme3.input.*;
 import com.jme3.input.controls.*;
@@ -17,6 +19,9 @@ import com.jme3.light.AmbientLight;
 import com.jme3.light.DirectionalLight;
 import com.jme3.math.*;
 import com.jme3.niftygui.NiftyJmeDisplay;
+import com.jme3.post.Filter;
+import com.jme3.post.FilterPostProcessor;
+import com.jme3.post.filters.BloomFilter;
 import com.jme3.renderer.RenderManager;
 import com.jme3.scene.CameraNode;
 import com.jme3.scene.Geometry;
@@ -27,7 +32,8 @@ import com.jme3.system.AppSettings;
 import de.lessvoid.nifty.Nifty;
 import java.util.ArrayList;
 import java.util.Random;
-import java.util.logging.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class Game extends SimpleApplication {
 
@@ -130,7 +136,13 @@ public class Game extends SimpleApplication {
 //        playerNode.attachChild(camNode);
         rootNode.attachChild(camNode);
         rootNode.attachChild(playerNode);
-
+        
+        //Filters
+        FilterPostProcessor fpp = new FilterPostProcessor(assetManager);
+        Filter bloom = new BloomFilter(BloomFilter.GlowMode.Objects);        
+        fpp.addFilter(bloom);
+        viewPort.addProcessor(fpp);
+        
         //Mobs
         mobs = new Node("Mobs");
         rootNode.attachChild(mobs);
@@ -283,6 +295,23 @@ public class Game extends SimpleApplication {
         public void onAnalog(String name, float value, float tpf) {
             if (name.equals("Mouse Up") || name.equals("Mouse Down") || name.equals("Mouse Right") || name.equals("Mouse Left")) {
                 cursorPos = inputManager.getCursorPosition();
+                //Target Picking
+                CollisionResults results = new CollisionResults();
+                Vector3f click3d = cam.getWorldCoordinates(new Vector2f(cursorPos.x, cursorPos.y), 0f).clone();
+                Vector3f dir = cam.getWorldCoordinates(new Vector2f(cursorPos.x, cursorPos.y), 1f).subtractLocal(click3d).normalizeLocal();
+                Ray ray = new Ray(click3d, dir);
+                rootNode.collideWith(ray, results);
+                if (results.size() > 0) {
+                    CollisionResult col = results.getClosestCollision();
+                    Spatial tempGeom = col.getGeometry();
+                    System.out.println("  You shot " + tempGeom.getName() + " at " + col.getContactPoint() + ", " + col.getDistance() + " wu away.");
+                    Entity e = idMap.getEntity(tempGeom);
+                    if (e != null) {
+                        e.setOutlineGlow(true, ColorRGBA.Red);
+                    }
+                }
+                
+                //Player Rotation
                 //float angle = (float)(Math.PI + Math.PI/4 + Math.atan2((cursorPos.y - settings.getHeight()/2),(cursorPos.x - settings.getWidth()/2)));
                 //Correction for model rotation, above is normal
                 float angle = (float) (Math.PI + (3 * Math.PI) / 4 + Math.atan2((cursorPos.y - settings.getHeight() / 2), (cursorPos.x - settings.getWidth() / 2)));
@@ -314,31 +343,19 @@ public class Game extends SimpleApplication {
             //        weapText.setText("Weap: " + player.getWeap().toString());
         }
         isRunning = (nifty.getCurrentScreen() == nifty.getScreen("HUDScreen"));
+        
         if (isRunning) {
             Vector3f walkDirection = new Vector3f();
-            if (left) {
-                walkDirection.addLocal(player.getSpeed(), 0, -player.getSpeed());
-            }
-            if (right) {
-                walkDirection.addLocal(-player.getSpeed(), 0, player.getSpeed());
-            }
-            if (up) {
-                walkDirection.addLocal(player.getSpeed(), 0, player.getSpeed());
-            }
-            if (down) {
-                walkDirection.addLocal(-player.getSpeed(), 0, -player.getSpeed());
-            }
+            if (left) {walkDirection.addLocal(player.getSpeed(), 0, -player.getSpeed());}
+            if (right) {walkDirection.addLocal(-player.getSpeed(), 0, player.getSpeed());}
+            if (up) {walkDirection.addLocal(player.getSpeed(), 0, player.getSpeed());}
+            if (down) {walkDirection.addLocal(-player.getSpeed(), 0, -player.getSpeed());}
 
             player.setWalkDirection(walkDirection);
-            if (jump) {
-                player.jump();
-            }
+            if (jump) { player.jump();}
 
-            if (fire && !player.isFiring()) {
-                player.fireOn();
-            } else if (!fire && player.isFiring()) {
-                player.fireOff();
-            }
+            if (fire && !player.isFiring()) {player.fireOn();} 
+            else if (!fire && player.isFiring()) {player.fireOff();}
 
             player.update();
             camNode.setLocalTranslation(player.getPos().add(new Vector3f(-14, 14, -14)));

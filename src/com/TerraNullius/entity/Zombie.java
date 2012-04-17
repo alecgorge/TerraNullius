@@ -41,6 +41,7 @@ public class Zombie extends Mob {
         
         spatial = game.getAssetManager().loadModel("Models/Human/meHumanMale.mesh.xml");
         spatial.setName("Zombie");
+        System.out.println(spatial.getName());
         mat = new Material(game.getAssetManager(), "Common/MatDefs/Misc/Unshaded.j3md");
         mat.setColor("Color", ColorRGBA.Black);
         spatial.setMaterial(mat);

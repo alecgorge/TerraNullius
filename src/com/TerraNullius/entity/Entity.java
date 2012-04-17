@@ -67,6 +67,10 @@ public class Entity {
         this.rot.fromAngles(yaw, roll, pitch);
     }
     
+    public void setOutlineGlow(boolean value, ColorRGBA color){
+        this.mat.setColor("GlowColor", color);
+    }
+    
     public Quaternion getRot() {return this.rot;}
     
     public ArrayList<Entity> checkCollisions(Vector3f targetPos){

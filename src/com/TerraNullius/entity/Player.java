@@ -114,7 +114,7 @@ public class Player extends Mob {
         Bullet bul = new Bullet(game, playerPos, rayCoords);
 
         if (results.size() > 0) {
-            CollisionResult col = results.getCollision(0);
+            CollisionResult col = results.getClosestCollision();
             Spatial tempGeom = col.getGeometry();
             if (col.getDistance() <= weap.range) {
                 System.out.println("  You shot " + tempGeom.getName() + " at " + col.getContactPoint() + ", " + col.getDistance() + " wu away.");
