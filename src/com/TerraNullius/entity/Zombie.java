@@ -47,7 +47,7 @@ public class Zombie extends Mob {
         spatial.setMaterial(mat);
         spatial.scale(1.5f, 1.5f, 1.5f);
         game.mobs.attachChild(spatial);
-        game.idMap.add(spatial, this);
+        spatial.setUserData("ID", game.idMap.add(spatial, this));
         
         physChar = new CharacterControl(new CapsuleCollisionShape(.2f, 0.75f, 1), 0.1f);
         physChar.setJumpSpeed(20);

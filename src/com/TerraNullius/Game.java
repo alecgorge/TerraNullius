@@ -304,10 +304,13 @@ public class Game extends SimpleApplication {
                 if (results.size() > 0) {
                     CollisionResult col = results.getClosestCollision();
                     Spatial tempGeom = col.getGeometry();
-                    System.out.println("  You shot " + tempGeom.getName() + " at " + col.getContactPoint() + ", " + col.getDistance() + " wu away.");
-                    Entity e = idMap.getEntity(tempGeom);
+                    System.out.println("  You selected " + tempGeom.getName() + " at " + col.getContactPoint() + ", " + col.getDistance() + " wu away.");
+                    String id = col.getGeometry().getUserData("ID");
+                    System.out.println(id);
+                    Entity e = idMap.getEntity(id);
                     if (e != null) {
-                        e.setOutlineGlow(true, ColorRGBA.Red);
+                       // e.setOutlineGlow(true, ColorRGBA.Red);
+                        e.die();
                     }
                 }
                 

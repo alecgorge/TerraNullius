@@ -21,11 +21,12 @@ public class EntityIDMapper {
         
     }
     
-    public void add(Spatial spatial, Entity e){
+    public String add(Spatial spatial, Entity e){
         String ID = "" + IDs.size() + 1 + "";
         IDs.add(ID);
         spatials.add(spatial);
         entities.add(e);
+        return ID;
     }
     
     public void remove(Spatial spatial){
@@ -70,6 +71,12 @@ public class EntityIDMapper {
     
     public Entity getEntity(Spatial spatial){
         int index = spatials.indexOf(spatial); 
+        if(index == -1) return null;
+        return entities.get(index);   
+    }
+    
+    public Entity getEntity(String ID){
+        int index = IDs.indexOf(ID); 
         if(index == -1) return null;
         return entities.get(index);   
     }

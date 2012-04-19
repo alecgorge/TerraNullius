@@ -46,7 +46,7 @@ public class Player extends Mob {
         spatial.setMaterial(mat);
         spatial.scale(1.5f, 1.5f, 1.5f);
         spatial.setLocalTranslation(pos);
-        game.idMap.add(spatial, this);
+        spatial.setUserData("ID", game.idMap.add(spatial, this));
 
         physChar = new CharacterControl(new CapsuleCollisionShape(.2f, 0.75f, 1), 0.1f);
         physChar.setJumpSpeed(10);
@@ -118,7 +118,8 @@ public class Player extends Mob {
             Spatial tempGeom = col.getGeometry();
             if (col.getDistance() <= weap.range) {
                 System.out.println("  You shot " + tempGeom.getName() + " at " + col.getContactPoint() + ", " + col.getDistance() + " wu away.");
-                Entity e = game.idMap.getEntity(tempGeom);
+                String id = tempGeom.getUserData("ID");
+                Entity e = game.idMap.getEntity(id);
                 if(e != null) e.hurt(this);
             }
         }
