@@ -27,6 +27,11 @@ target picking (think red outline on hover and auto lock/aim)
 persistent inventory and hotbar
 menu system
 
+!!important
+refactor to store entity data in spatial's userdata and use custom controls to control spatials
+entity inheritance system should be factored out
+refactor to use appstates to manage game, menu, and inventory (more?)
+
 
 Current Bugs:
 Jumping too slow/high
